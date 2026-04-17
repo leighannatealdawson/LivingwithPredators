@@ -1,0 +1,40 @@
+{
+  "name": "wildlife-perception-survey",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Public perception survey for foxes and pine martens on the island of Ireland (PhD research, Ulster University).",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run generate:schema && tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "generate:schema": "tsx scripts/xlsform-to-schema.ts",
+    "generate:header-row": "tsx scripts/generate-header-row.ts",
+    "generate:check": "tsx scripts/xlsform-to-schema.ts --check",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.7.4",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "autoprefixer": "^10.4.20",
+    "exceljs": "^4.4.0",
+    "happy-dom": "^15.7.4",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8",
+    "vitest": "^2.1.2"
+  }
+}
