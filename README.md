@@ -1,4 +1,4 @@
-# Wildlife Perception Survey — Ireland
+# Wildlife Perception Survey  Ireland
 
 A short public survey about foxes and pine martens on the island of Ireland.
 PhD research, School of Geography and Environmental Sciences, Ulster University.
