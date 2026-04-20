@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ChangeEvent } from "react";
 import type { AnswerValue, Question } from "./schema-types";
 import { FieldLabel, HelperText } from "../components/ui/FieldLabel";
 import { RadioGroup } from "../components/ui/RadioGroup";
@@ -194,8 +194,8 @@ function PostcodeField({
 
     const digitCount = (compact.match(/\d/g) || []).length;
 
-    // ❌ too long (max 9 chars excluding spaces)
-    if (compact.length > 9) {
+    // ❌ too long (max 7 chars excluding spaces)
+    if (compact.length > 7) {
       return { ok: false, reason: "too_long" };
     }
 
@@ -209,14 +209,17 @@ function PostcodeField({
       return { ok: false, reason: "invalid_chars" };
     }
 
-    // 🇮🇪 Eircode rough pattern (loose)
-    const ieLike = /^[A-Z]\d{2}\s?[A-Z0-9]{0,4}$/;
+    // 🇮🇪 Eircode – allow partial typing
+    const ieLike =
+      /^[A-Z]$|^[A-Z]\d$|^[A-Z]\d{2}$|^[A-Z]\d{2}\s?[A-Z0-9]{0,4}$/;
 
-    // 🇬🇧 NI rough pattern (loose BT)
+    // 🇮🇪 Eircode – fully valid (e.g. D02 X285)
+    const ieFull = /^[A-Z]\d{2}\s[A-Z0-9]{4}$/;
+
+    // 🇬🇧 Northern Ireland – allow partial typing
     const niLike = /^BT[0-9A-Z\s]{0,6}$/;
 
-    // valid completed states
-    const ieFull = /^[A-Z]\d{2}\s[A-Z0-9]{3}$/;
+    // 🇬🇧 Northern Ireland – fully valid
     const niFull = /^BT\d{1,2}\s?\d{1,4}[A-Z]?$/;
 
     if (ieFull.test(cleaned)) {
@@ -249,7 +252,7 @@ function PostcodeField({
       <TextInput
         id={q.id}
         value={raw}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         onBlur={() => setTouched(true)}
         aria-labelledby={labelId}
         error={errorMessage}
@@ -271,4 +274,4 @@ function PostcodeField({
       )}
     </section>
   );
-}}
+}
