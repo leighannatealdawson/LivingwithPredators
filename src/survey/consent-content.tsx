@@ -1,12 +1,3 @@
-/**
- * Consent content for the Welcome page.
- *
- * TODO(researcher): review and finalise the following before launch:
- *   - exact retention period
- *   - ethics committee reference (if any)
- *   - contact email for questions
- *   - any institutional boilerplate required by Ulster University
- */
 export function ConsentContent() {
   return (
     <div className="prose prose-stone max-w-none text-stone-800">
@@ -16,16 +7,17 @@ export function ConsentContent() {
       </p>
 
       <h2>Please read the following information carefully before continuing.</h2>
+
       <p>
-        Participation in this study is entirely voluntary. You may withdraw from the survey at any time prior to submitting your responses, for any reason. Once the survey has been submitted, all responses are fully anonymous and cannot be withdrawn.
+        Participation in this study is <strong>entirely voluntary</strong>. You may withdraw from the survey at any time prior to submitting your responses, for any reason. Once the survey has been submitted, all responses are <strong>fully anonymous and cannot be withdrawn</strong>.
       </p>
 
       <p>
-        By submitting this survey, you indicate your consent for your responses to be used for scientific research purposes. All data collected are anonymous and confidential and may be used in academic publications, reports, and presentations. No personally identifiable information will be collected or stored.
+        By submitting this survey, you indicate your consent for your responses to be used for scientific research purposes. All data collected are <strong>anonymous and confidential</strong> and may be used in academic publications, reports, and presentations. No personally identifiable information will be collected or stored.
       </p>
 
       <p>
-        Participants are asked to respond honestly and to the best of their ability. There are no right or wrong answers.
+        Participants are asked to respond honestly and to the best of their ability. There are <strong>no right or wrong answers</strong>.
       </p>
 
       <p>
@@ -33,7 +25,7 @@ export function ConsentContent() {
       </p>
 
       <p>
-        Please only complete this survey once.
+        <strong>Please only complete this survey once.</strong>
       </p>
 
       <p>
@@ -41,7 +33,8 @@ export function ConsentContent() {
       </p>
 
       <p>
-        If you have any questions about the study, you can contact the researcher Leighanna Teal Dawson using emial teal-dawson_l@ulster.ac.uk
+        <strong>Leighanna Teal Dawson</strong><br />
+        Email: <strong>teal-dawson_l@ulster.ac.uk</strong>
       </p>
 
       <p>
