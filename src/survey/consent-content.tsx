@@ -7,7 +7,7 @@ export function ConsentContent() {
       </p>
 
       <p>
-        Participation is entirely  <strong>voluntary.</strong> You may </strong>withdraw from the survey at any time <strong> before submitting your responses, for <strong>any reason </strong>.
+        Participation is entirely <strong>voluntary.</strong> You may withdraw from the survey at any time before submitting your responses, for any reason.
       </p>
 
       <p>
@@ -19,7 +19,7 @@ export function ConsentContent() {
       </p>
 
       <p>
-        Participants are asked to respond <strong>honestly </strong>and to the </strong>best of their ability</strong>. There are <strong>no right or wrong answers</strong>.
+        Participants are asked to respond <strong>honestly</strong> and to the <strong>best of their ability</strong>. There are <strong>no right or wrong answers</strong>.
       </p>
 
       <p>
