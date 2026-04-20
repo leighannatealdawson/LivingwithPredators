@@ -1,4 +1,4 @@
-import { useMemo, useState, type ChangeEvent } from "react";
+import { useMemo, useState } from "react";
 import type { AnswerValue, Question } from "./schema-types";
 import { FieldLabel, HelperText } from "../components/ui/FieldLabel";
 import { RadioGroup } from "../components/ui/RadioGroup";
@@ -181,80 +181,21 @@ function PostcodeField({
   labelId: string;
 }) {
   const [touched, setTouched] = useState(false);
-
   const raw = typeof value === "string" ? value : "";
-
-  const result = useMemo(() => {
-    if (!raw) return null;
-
-    const cleaned = raw.toUpperCase().trim();
-
-    // remove spaces for counting rules
-    const compact = cleaned.replace(/\s/g, "");
-
-    const digitCount = (compact.match(/\d/g) || []).length;
-
-    // ❌ too long (max 7 chars excluding spaces)
-    if (compact.length > 7) {
-      return { ok: false, reason: "too_long" };
-    }
-
-    // ❌ too many digits (max 5 total)
-    if (digitCount > 5) {
-      return { ok: false, reason: "too_many_numbers" };
-    }
-
-    // ❌ invalid characters
-    if (!/^[A-Z0-9\s]*$/.test(cleaned)) {
-      return { ok: false, reason: "invalid_chars" };
-    }
-
-    // 🇮🇪 Eircode – allow partial typing
-    const ieLike =
-      /^[A-Z]$|^[A-Z]\d$|^[A-Z]\d{2}$|^[A-Z]\d{2}\s?[A-Z0-9]{0,4}$/;
-
-    // 🇮🇪 Eircode – fully valid (e.g. D02 X285)
-    const ieFull = /^[A-Z]\d{2}\s[A-Z0-9]{4}$/;
-
-    // 🇬🇧 Northern Ireland – allow partial typing
-    const niLike = /^BT[0-9A-Z\s]{0,6}$/;
-
-    // 🇬🇧 Northern Ireland – fully valid
-    const niFull = /^BT\d{1,2}\s?\d{1,4}[A-Z]?$/;
-
-    if (ieFull.test(cleaned)) {
-      return { ok: true, kind: "ie" as const };
-    }
-
-    if (niFull.test(cleaned)) {
-      return { ok: true, kind: "ni" as const };
-    }
-
-    // allow partial typing (no error shown)
-    if (ieLike.test(cleaned) || niLike.test(cleaned)) {
-      return null;
-    }
-
-    return { ok: false, reason: "invalid_format" };
-  }, [raw]);
-
+  const result = useMemo(() => (raw ? validateIrishOrNIPostcode(raw) : null), [raw]);
   const errorMessage =
-  touched && result && result.ok === false
-    ? postcodeErrorMessage(result.reason)
-    : null;
+    touched && result && !result.ok ? postcodeErrorMessage(result.reason) : null;
 
   return (
     <section aria-labelledby={labelId} className="space-y-3">
       <FieldLabel id={labelId} required={q.required}>
         {q.prompt}
       </FieldLabel>
-
       {q.hint && <HelperText>{q.hint}</HelperText>}
-
       <TextInput
         id={q.id}
         value={raw}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         onBlur={() => setTouched(true)}
         aria-labelledby={labelId}
         error={errorMessage}
@@ -263,16 +204,9 @@ function PostcodeField({
         spellCheck={false}
         placeholder="e.g. BT12 5AB or D02 X285"
       />
-
       {errorMessage && <HelperText tone="error">{errorMessage}</HelperText>}
-
       {result && result.ok && (
-        <HelperText>
-          {result.kind === "ni"
-            ? "Northern Ireland postcode"
-            : "Irish Eircode"}{" "}
-          — thanks.
-        </HelperText>
+        <HelperText>{result.kind === "ni" ? "Northern Ireland postcode" : "Irish Eircode"} — thanks.</HelperText>
       )}
     </section>
   );
