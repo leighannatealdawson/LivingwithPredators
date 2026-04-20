@@ -169,45 +169,48 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
   }
 }
 
-function PostcodeField({
-  question: q,
-  value,
-  onChange,
-  labelId,
-}: {
-  question: Extract<Question, { kind: "text" }>;
-  value: AnswerValue | undefined;
-  onChange: (v: AnswerValue) => void;
-  labelId: string;
-}) {
-  const [touched, setTouched] = useState(false);
-  const raw = typeof value === "string" ? value : "";
-  const result = useMemo(() => (raw ? validateIrishOrNIPostcode(raw) : null), [raw]);
-  const errorMessage =
-    touched && result && !result.ok ? postcodeErrorMessage(result.reason) : null;
+export function validateIrishOrNIPostcode(input: string) {
+  const cleaned = input
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .trim();
 
-  return (
-    <section aria-labelledby={labelId} className="space-y-3">
-      <FieldLabel id={labelId} required={q.required}>
-        {q.prompt}
-      </FieldLabel>
-      {q.hint && <HelperText>{q.hint}</HelperText>}
-      <TextInput
-        id={q.id}
-        value={raw}
-        onChange={(e) => onChange(e.target.value)}
-        onBlur={() => setTouched(true)}
-        aria-labelledby={labelId}
-        error={errorMessage}
-        autoCapitalize="characters"
-        autoCorrect="off"
-        spellCheck={false}
-        placeholder="e.g. BT12 5AB or D02 X285"
-      />
-      {errorMessage && <HelperText tone="error">{errorMessage}</HelperText>}
-      {result && result.ok && (
-        <HelperText>{result.kind === "ni" ? "Northern Ireland postcode" : "Irish Eircode"} — thanks.</HelperText>
-      )}
-    </section>
-  );
+  if (!cleaned) return null;
+
+  const compact = cleaned.replace(/\s/g, "");
+
+  // 🚨 reject obvious non-IE/NI formats (US ZIP etc)
+  if (/^\d{5}(-\d{4})?$/.test(cleaned)) {
+    return { ok: false, reason: "invalid_region" };
+  }
+
+  // NI (BT area) - flexible full match
+  const niFull = /^BT\d{1,2}\s?\d{1,4}[A-Z]?$/;
+
+  // IE Eircode - flexible full match
+  const ieFull = /^[A-Z]\d{2}\s?[A-Z0-9]{3,4}$/;
+
+  // partial NI allowed while typing
+  const niPartial = /^BT[0-9A-Z]{0,5}$/;
+
+  // partial IE allowed while typing
+  const iePartial = /^[A-Z0-9]{1,4}$/;
+
+  // valid full NI
+  if (niFull.test(cleaned)) {
+    return { ok: true, kind: "ni" as const };
+  }
+
+  // valid full IE
+  if (ieFull.test(cleaned)) {
+    return { ok: true, kind: "ie" as const };
+  }
+
+  // allow partial input (NO error shown)
+  if (niPartial.test(compact) || iePartial.test(compact)) {
+    return null;
+  }
+
+  // fallback invalid
+  return { ok: false, reason: "invalid_format" };
 }
