@@ -69,7 +69,7 @@ export function WelcomePage({ consented, onConsentChange, onStart }: WelcomePage
         </p>
 
         <p>
-          By proceeding with this survey, you confirm that you are aged 18 years or over and that you have read and understood the information provided above and reside on the island of Ireland. If you have any questions about the study, you can contact the researcher Leighanna Teal Dawson using emial teal-Dawson_l@ulster.ac.uk
+          By proceeding with this survey, you confirm that you are aged 18 years or over and that you have read and understood the information provided above and reside on the island of Ireland. If you have any questions about the study, you can contact the researcher Leighanna Teal Dawson using emial teal-dawson_l@ulster.ac.uk
         </p>
       </div>
 
