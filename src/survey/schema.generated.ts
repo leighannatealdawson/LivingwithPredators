@@ -17,7 +17,7 @@ export const questions: Question[] = [
   {
     id: "species_f",
     kind: "single",
-    prompt: "Please identify the animal in Photo A from the options below?",
+    prompt: "Please identify the animal in the photo above from the options below?",
     required: true,
     choices: [{"value":"pine_marten","label":"Pine marten"},{"value":"fox","label":"Fox"},{"value":"stoat","label":"Stoat"},{"value":"ferret","label":"Ferret"},{"value":"domestic_cat","label":"Domestic cat"},{"value":"badger","label":"Badger"},{"value":"not_sure","label":"Not sure / I don’t know"}],
     layout: "horizontal",
@@ -25,7 +25,7 @@ export const questions: Question[] = [
   {
     id: "confidence_f",
     kind: "slider",
-    prompt: "How confident are you that you could recognise this animal if you saw it near your home? 1 = Not at all confident - 10 = Very confident",
+    prompt: "How confident are you that you could recognise this animal if you saw it in person?",
     required: true,
     leftLabel: "Not at all confident",
     rightLabel: "Very confident",
@@ -34,7 +34,7 @@ export const questions: Question[] = [
   {
     id: "species_pm",
     kind: "single",
-    prompt: "Please identify the animal in Photo B from the options below?",
+    prompt: "Please identify the animal in the photo above from the options below?",
     required: true,
     choices: [{"value":"pine_marten","label":"Pine marten"},{"value":"fox","label":"Fox"},{"value":"stoat","label":"Stoat"},{"value":"ferret","label":"Ferret"},{"value":"domestic_cat","label":"Domestic cat"},{"value":"badger","label":"Badger"},{"value":"not_sure","label":"Not sure / I don’t know"}],
     layout: "horizontal",
@@ -42,12 +42,28 @@ export const questions: Question[] = [
   {
     id: "confidence_pm",
     kind: "slider",
-    prompt: "How confident are you that you could recognise this animal if you saw it near your home? 1 = Not at all confident - 10 = Very confident",
+    prompt: "How confident are you that you could recognise this animal if you saw it in person? ",
     required: true,
     leftLabel: "Not at all confident",
     rightLabel: "Very confident",
     anchors: [],
   },
+  {
+  id: "confidence_pm",
+  kind: "slider-group",
+  prompt: "How confident are you that you could recognise this animal if you saw it in person?",
+  required: true,
+  leftLabel: "Not at all confident",
+  rightLabel: "Very confident",
+  anchors: [
+  "Not at all confident",
+  "Slightly confident",
+  "Moderately confident",
+  "Confident",
+  "Very confident",  ],
+  items: [    {id: "confidence_pm", label: ""    }],
+},
+``
   {
     id: "seen_pm_matrix",
     kind: "choice-matrix",
@@ -65,7 +81,10 @@ export const questions: Question[] = [
     leftLabel: "Completely unacceptable",
     rightLabel: "Completely acceptable",
     anchors: ["Completely unacceptable","Somewhat unacceptable","Neutral","Somewhat acceptable","Completely acceptable"],
-    items: [{"id":"pm_a","label":"A. Pine marten is seen in its natural habitat (i.e. woodland)"},{"id":"pm_b","label":"B. Pine marten is seen around homes or farms (i.e, gardens, yards, farmyards)"},{"id":"pm_c","label":"C. Pine marten has denned in a house"},{"id":"pm_d","label":"D. Pine marten has attacked poultry and gamebirds"},{"id":"pm_e","label":"E. Pine marten has been seen eating from a bin"}],
+    items: [{"id":"pm_a","label":"A. Pine marten is seen in its natural habitat (i.e. woodland)"},
+      {"id":"pm_b","label":"B. Pine marten is seen around homes or farms (i.e, gardens, yards, farmyards)"},
+      {"id":"pm_c","label":"C. Pine marten has denned in a house"},{"id":"pm_d","label":"D. Pine marten has attacked poultry and gamebirds"},
+      {"id":"pm_e","label":"E. Pine marten has been seen eating from a bin"}],
   },
   {
     id: "fox_scenarios",
