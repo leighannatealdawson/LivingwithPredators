@@ -24,6 +24,7 @@ export function WelcomePage({ consented, onConsentChange, onStart }: WelcomePage
 
   return (
     <article className="space-y-8">
+
       {consentImageExists && (
         <figure>
           <img
@@ -34,10 +35,21 @@ export function WelcomePage({ consented, onConsentChange, onStart }: WelcomePage
         </figure>
       )}
 
-      <header className="space-y-2">
-        <h1 className="!font-serif">Living with Predators- Share your experience across the island of Ireland</h1>
+      <header className="space-y-4">
+        <h1 className="!font-serif">
+          Living with Predators- Share your experience across the island of Ireland
+        </h1>
+
         <p className="text-lg text-stone-700">
           Your views help inform how we live alongside foxes and pine martens.
+        </p>
+
+        <p className="text-stone-700">
+          This research is being carried out as part of a PhD at the University of Ulster, within the School of Geography and Environmental Sciences.
+        </p>
+
+        <p className="text-stone-700">
+          The study aims to examine public views and experiences relating to wildlife in Ireland in order to inform wildlife management, conservation planning, and evidence-based decision-making, and will also contribute to academic research in this field.
         </p>
       </header>
 
@@ -59,6 +71,7 @@ export function WelcomePage({ consented, onConsentChange, onStart }: WelcomePage
             </span>
           }
         />
+
         {attempted && !consented && (
           <p className="mt-3 text-sm text-red-700">
             Please tick the box above to confirm you consent before starting.
@@ -71,6 +84,7 @@ export function WelcomePage({ consented, onConsentChange, onStart }: WelcomePage
           Start survey
         </Button>
       </div>
+
     </article>
   );
 }
