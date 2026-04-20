@@ -52,23 +52,28 @@ export function WelcomePage({ consented, onConsentChange, onStart }: WelcomePage
       <ConsentContent />
 
       <div className="rounded-xl border border-forest-200 bg-forest-50 p-5">
-        <Checkbox
-          checked={consented}
-          onChange={(e) => {
-            onConsentChange(e.target.checked);
-            if (e.target.checked) setAttempted(false);
-          }}
-          label={
-            <span>
-              <strong>
-                I confirm that I am aged 18 years or over and reside on the island of Ireland.
-              </strong>
-              <span className="mt-1 block text-sm text-stone-600">
-                By ticking this box, I confirm I meet the eligibility criteria and have read the information above.
+                  <Checkbox
+            checked={consented}
+            onChange={(e) => {
+              onConsentChange(e.target.checked);
+              if (e.target.checked) setAttempted(false);
+            }}
+            label={
+              <span>
+                <strong>I confirm the following:</strong>
+
+                <ul className="mt-2 list-disc pl-5 text-sm text-stone-700 space-y-1">
+                  <li>I am aged 18 years or over</li>
+                  <li>I reside on the island of Ireland</li>
+                  <li>I have read the information provided above</li>
+                </ul>
+
+                <span className="mt-2 block text-sm text-stone-600">
+                  Ticking this box is required to start the survey.
+                </span>
               </span>
-            </span>
-          }
-        />
+            }
+          />
 
         {attempted && !consented && (
           <p className="mt-3 text-sm text-red-700">
