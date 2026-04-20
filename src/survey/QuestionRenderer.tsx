@@ -179,38 +179,54 @@ export function validateIrishOrNIPostcode(input: string) {
 
   const compact = cleaned.replace(/\s/g, "");
 
-  // 🚨 reject obvious non-IE/NI formats (US ZIP etc)
+  // 🚨 Reject obvious non-IE/NI formats (e.g. US ZIP codes)
   if (/^\d{5}(-\d{4})?$/.test(cleaned)) {
     return { ok: false, reason: "invalid_region" };
   }
 
-  // NI (BT area) - flexible full match
+  // ----------------------------
+  // FULL VALIDATION (final state)
+  // ----------------------------
+
+  // Northern Ireland (BT codes)
   const niFull = /^BT\d{1,2}\s?\d{1,4}[A-Z]?$/;
 
-  // IE Eircode - flexible full match
+  // Republic of Ireland (Eircodes)
   const ieFull = /^[A-Z]\d{2}\s?[A-Z0-9]{3,4}$/;
 
-  // partial NI allowed while typing
+  // ----------------------------
+  // PARTIAL VALIDATION (typing state)
+  // ----------------------------
+
+  // allow messy NI typing
   const niPartial = /^BT[0-9A-Z]{0,5}$/;
 
-  // partial IE allowed while typing
+  // allow messy IE typing
   const iePartial = /^[A-Z0-9]{1,4}$/;
 
-  // valid full NI
+  // ----------------------------
+  // VALID FINAL INPUTS
+  // ----------------------------
+
   if (niFull.test(cleaned)) {
     return { ok: true, kind: "ni" as const };
   }
 
-  // valid full IE
   if (ieFull.test(cleaned)) {
     return { ok: true, kind: "ie" as const };
   }
 
-  // allow partial input (NO error shown)
+  // ----------------------------
+  // SOFT STATE (no error shown)
+  // ----------------------------
+
   if (niPartial.test(compact) || iePartial.test(compact)) {
     return null;
   }
 
-  // fallback invalid
+  // ----------------------------
+  // INVALID INPUT
+  // ----------------------------
+
   return { ok: false, reason: "invalid_format" };
 }
