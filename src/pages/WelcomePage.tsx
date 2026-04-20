@@ -1,90 +1,76 @@
-export function ConsentContent() {
+import { useState } from "react";
+import { Button } from "../components/ui/Button";
+import { Checkbox } from "../components/ui/Checkbox";
+import { ConsentContent } from "../survey/consent-content";
+import { usePageAssetExists } from "../util/use-asset";
+
+interface WelcomePageProps {
+  consented: boolean;
+  onConsentChange: (v: boolean) => void;
+  onStart: () => void;
+}
+
+export function WelcomePage({ consented, onConsentChange, onStart }: WelcomePageProps) {
+  const consentImageExists = usePageAssetExists("species/Consent.png");
+  const [attempted, setAttempted] = useState(false);
+
+  const tryStart = () => {
+    if (!consented) {
+      setAttempted(true);
+      return;
+    }
+    onStart();
+  };
+
   return (
-    <div className="space-y-8 text-stone-800">
+    <article className="space-y-8">
+      {consentImageExists && (
+        <figure>
+          <img
+            src={import.meta.env.BASE_URL + "species/Consent.png"}
+            alt=""
+            className="w-full rounded-xl border border-stone-200"
+          />
+        </figure>
+      )}
 
-      {/* Title block */}
-      <section className="space-y-3">
-        <h2 className="text-xl font-semibold">
-          About this research
-        </h2>
-
-        <p className="leading-relaxed">
-          This research is being carried out as part of a PhD at the University of Ulster, within the School of Geography and Environmental Sciences. The study aims to examine public views and experiences relating to wildlife in Ireland in order to inform wildlife management, conservation planning, and evidence-based decision-making, and will also contribute to academic research in this field.
+      <header className="space-y-2">
+        <h1 className="!font-serif">Living with Predators- Share your experience across the island of Ireland</h1>
+        <p className="text-lg text-stone-700">
+          Your views help inform how we live alongside foxes and pine martens.
         </p>
-      </section>
+      </header>
 
-      {/* Intro instruction */}
-      <section className="pt-2">
-        <h3 className="text-lg font-semibold">
-          Please read the following information carefully before continuing.
-        </h3>
-      </section>
+      <ConsentContent />
 
-      {/* Participation */}
-      <section className="space-y-3">
-        <p>
-          Participation in this study is entirely voluntary. You may withdraw from the survey at any time prior to submitting your responses, for any reason. Once the survey has been submitted, all responses are fully anonymous and cannot be withdrawn.
-        </p>
-      </section>
+      <div className="rounded-xl border border-forest-200 bg-forest-50 p-5">
+        <Checkbox
+          checked={consented}
+          onChange={(e) => {
+            onConsentChange(e.target.checked);
+            if (e.target.checked) setAttempted(false);
+          }}
+          label={
+            <span>
+              <strong>I have read the information above and consent to taking part.</strong>
+              <span className="mt-1 block text-sm text-stone-600">
+                Ticking this box is required to start the survey.
+              </span>
+            </span>
+          }
+        />
+        {attempted && !consented && (
+          <p className="mt-3 text-sm text-red-700">
+            Please tick the box above to confirm you consent before starting.
+          </p>
+        )}
+      </div>
 
-      {/* Consent */}
-      <section className="space-y-3">
-        <p>
-          By submitting this survey, you indicate your consent for your responses to be used for scientific research purposes. All data collected are anonymous and confidential and may be used in academic publications, reports, and presentations. No personally identifiable information will be collected or stored.
-        </p>
-      </section>
-
-      {/* Instructions */}
-      <section className="space-y-3">
-        <p>
-          Participants are asked to respond honestly and to the best of their ability. There are no right or wrong answers.
-        </p>
-      </section>
-
-      {/* Ethics */}
-      <section className="space-y-3">
-        <p>
-          This research has received full ethical approval from Ulster University and is being conducted in accordance with the University’s ethical guidelines for research involving human participants.
-        </p>
-      </section>
-
-      {/* Frequency reminder */}
-      <section>
-        <p className="font-medium">
-          Please only complete this survey once.
-        </p>
-      </section>
-
-      {/* Contact block (visually separated) */}
-      <section className="border-t border-stone-200 pt-6 space-y-2">
-        <p>
-          If you require further information about this study or wish to make contact regarding the research, please contact:
-        </p>
-
-        <p className="font-medium">
-          Leighanna Teal Dawson
-        </p>
-
-        <p>
-          Email: <span className="font-medium">teal-dawson_l@ulster.ac.uk</span>
-        </p>
-      </section>
-
-      {/* Final confirmation (boxed feel) */}
-      <section className="rounded-lg border border-forest-200 bg-forest-50 p-4 space-y-2">
-        <p className="font-medium">
-          Final confirmation
-        </p>
-
-        <p>
-          By proceeding with this survey, you confirm that you are aged 18 years or over and that you have read and understood the information provided above and reside on the island of Ireland.
-        </p>
-
-        <p className="text-sm text-stone-600">
-          I have read the information above and consent to taking part. Ticking this box is required to start the survey.
-        </p>
-      </section>
-
-    </div>
+      <div className="flex justify-end">
+        <Button size="lg" onClick={tryStart} disabled={!consented}>
+          Start survey
+        </Button>
+      </div>
+    </article>
   );
 }
