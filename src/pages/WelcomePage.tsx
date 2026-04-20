@@ -49,7 +49,7 @@ export function WelcomePage({ consented, onConsentChange, onStart }: WelcomePage
         </p>
 
         <p className="text-stone-700">
-          The study aims to examine public views and experiences relating to wildlife in Ireland in order to inform <strong>wildlife management, conservation planning, and evidence-based decision-making</strong>, and will also contribute to academic research in this field.
+          The study aims to examine <strong>public views and experiences relating to wildlife on the island of Ireland</strong> in order to inform wildlife management, conservation planning, and evidence-based decision-making, and will also contribute to academic research in this field.
         </p>
       </header>
 
