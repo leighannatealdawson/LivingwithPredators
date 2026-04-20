@@ -7,19 +7,19 @@ export function ConsentContent() {
       </p>
 
       <p>
-        <strong>Participation is entirely voluntary.</strong> You may withdraw from the survey at any time before submitting your responses, for any reason.
+        Participation is entirely  <strong>voluntary.</strong> You may </strong>withdraw from the survey at any time <strong> before submitting your responses, for <strong>any reason </strong>.
       </p>
 
       <p>
-        Once submitted, all responses are <strong>fully anonymous</strong>.
+        Once submitted, all responses are fully <strong>anonymous</strong>.
       </p>
 
       <p>
-        By submitting this survey, you give <strong>consent for your responses to be used for scientific research purposes</strong>. All data collected are anonymous, and may be used in academic publications, reports, and presentations. <strong>No personally identifiable information will be collected or stored.</strong>
+        By submitting this survey, you give consent for your responses to be used for scientific research purposes. All data collected are anonymous, and may be used in academic publications, reports, and presentations. <strong>No personally identifiable information will be collected or stored.</strong>
       </p>
 
       <p>
-        Participants are asked to respond honestly and to the best of their ability. There are <strong>no right or wrong answers</strong>.
+        Participants are asked to respond <strong>honestly </strong>and to the </strong>best of their ability</strong>. There are <strong>no right or wrong answers</strong>.
       </p>
 
       <p>
@@ -27,7 +27,7 @@ export function ConsentContent() {
       </p>
 
       <p>
-        <strong>Please only complete this survey once.</strong>
+        Please only complete this survey <strong>once.</strong>
       </p>
 
     </div>
