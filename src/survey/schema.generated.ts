@@ -39,15 +39,7 @@ export const questions: Question[] = [
     choices: [{"value":"pine_marten","label":"Pine marten"},{"value":"fox","label":"Fox"},{"value":"stoat","label":"Stoat"},{"value":"ferret","label":"Ferret"},{"value":"domestic_cat","label":"Domestic cat"},{"value":"badger","label":"Badger"},{"value":"not_sure","label":"Not sure / I don’t know"}],
     layout: "horizontal",
   },
-  {
-    id: "confidence_pm",
-    kind: "slider",
-    prompt: "How confident are you that you could recognise this animal if you saw it in person? ",
-    required: true,
-    leftLabel: "Not at all confident",
-    rightLabel: "Very confident",
-    anchors: [],
-  },
+
   {
   id: "confidence_pm",
   kind: "slider-group",
