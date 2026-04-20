@@ -45,11 +45,11 @@ export function WelcomePage({ consented, onConsentChange, onStart }: WelcomePage
         </p>
 
         <p className="text-stone-700">
-          This research is being carried out as part of a PhD at the University of Ulster, within the School of Geography and Environmental Sciences.
+          This research is being carried out as part of a PhD at the <strong>University of Ulster</strong>, within the <strong>School of Geography and Environmental Sciences</strong>.
         </p>
 
         <p className="text-stone-700">
-          The study aims to examine public views and experiences relating to wildlife in Ireland in order to inform wildlife management, conservation planning, and evidence-based decision-making, and will also contribute to academic research in this field.
+          The study aims to examine public views and experiences relating to wildlife in Ireland in order to inform <strong>wildlife management, conservation planning, and evidence-based decision-making</strong>, and will also contribute to academic research in this field.
         </p>
       </header>
 
