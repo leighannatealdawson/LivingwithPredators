@@ -40,10 +40,6 @@ export function WelcomePage({ consented, onConsentChange, onStart }: WelcomePage
           Living with Predators- Share your experience across the island of Ireland
         </h1>
 
-        <p className="text-lg text-stone-700">
-          Your views help inform how we live alongside foxes and pine martens.
-        </p>
-
         <p className="text-stone-700">
           This research is being carried out as part of a PhD at the <strong>University of Ulster</strong>, within the <strong>School of Geography and Environmental Sciences</strong>.
         </p>
