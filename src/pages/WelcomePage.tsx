@@ -64,9 +64,11 @@ export function WelcomePage({ consented, onConsentChange, onStart }: WelcomePage
           }}
           label={
             <span>
-              <strong>I have read the information above and consent to taking part.</strong>
+              <strong>
+                I confirm that I am aged 18 years or over and reside on the island of Ireland.
+              </strong>
               <span className="mt-1 block text-sm text-stone-600">
-                Ticking this box is required to start the survey.
+                By ticking this box, I confirm I meet the eligibility criteria and have read the information above.
               </span>
             </span>
           }
