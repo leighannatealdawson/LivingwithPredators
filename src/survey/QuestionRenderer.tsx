@@ -239,7 +239,9 @@ function PostcodeField({
   }, [raw]);
 
   const errorMessage =
-    touched && result && !result.ok ? postcodeErrorMessage(result.reason) : null;
+  touched && result && result.ok === false
+    ? postcodeErrorMessage(result.reason)
+    : null;
 
   return (
     <section aria-labelledby={labelId} className="space-y-3">
