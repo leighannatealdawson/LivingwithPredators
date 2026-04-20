@@ -1,99 +1,181 @@
-# Wildlife Perception Survey  Ireland
+# Human–Wildlife Conflict in Ireland: Survey Repository
 
-A short public survey about foxes and pine martens on the island of Ireland.
-PhD research, School of Geography and Environmental Sciences, Ulster University.
+## Overview  
+This repository hosts the code and materials for a survey examining human–wildlife conflict on the island of Ireland, with a focus on pine martens (Martes martes) and red foxes (Vulpes vulpes).  
 
-The site is a static SPA hosted on GitHub Pages. Responses POST to a Google
-Apps Script endpoint that appends one row per submission to a Google Sheet the
-researcher owns. No backend servers, no analytics, no cookies.
+This research is being carried out as part of a PhD at the University of Ulster, within the School of Geography and Environmental Sciences. The study aims to examine public views and experiences relating to wildlife in Ireland in order to inform wildlife management, conservation planning, and evidence-based decision-making, and will also contribute to academic research in this field.
 
-## Structure
+---
 
-```
-docs/form.xlsx                  # Authoritative content: questions, choices, logic
-scripts/xlsform-to-schema.ts    # Regenerates src/survey/schema.generated.ts
-scripts/generate-header-row.ts  # Emits Google Sheet column order
-src/                            # React + TypeScript app
-server/apps-script/             # Deploy instructions + Code.gs for the Sheet
-.github/workflows/              # CI + GitHub Pages deploy
-```
+## Researcher Details  
+**Name:** Leighanna Teal Dawson  
+**Institution:** Ulster University  
+**Department:** School of Geography and Environmental Sciences  
+**Position:** PhD Researcher 
+**Email:** teal_dawson-l@ulster.ac.uk
 
-## Local development
+---
+
+## Survey Description  
+
+The survey collects information on:  
+- Wildlife interactions (pine martens and foxes)  
+- Public attitudes towards predators  
+- Perceived risks and tolerance  
+- Seasonal patterns of interactions  
+- Demographic information  
+
+The survey is structured into four sections:  
+1. Wildlife Interactions  
+2. Perceptions of Predators  
+3. Demographics  
+4. Additional Comments  
+
+---
+
+## Aims and Objectives  
+
+This study aims to investigate human-wildlife conflict implicating foxes (Vulpes vulpes) and pine martens (Martes martes) on the island of Ireland. It seeks to:  
+
+1) Investigate public attitudes towards foxes and pine martens, including perceived risks and tolerance.  
+2) Quantify and categorise interactions with these species by type and intensity, and examine associated public perceptions  
+3) Investigate seasonal variation in negative interactions among conflict types  
+4) Assess the influence of geographical and landscape factors on perceptions of human-wildlife conflict.  
+
+---
+
+## How This Repository Works  
+
+This project is a web-based survey built using a modern frontend framework (Vite, TypeScript, Tailwind CSS).  
+
+### Structure  
+- `src/` – Main survey application (questions, logic, UI)  
+- `public/` – Static assets  
+- `docs/` – Documentation (if applicable)  
+- `scripts/` / `server/` – Supporting scripts for deployment or processing  
+- `.github/workflows/` – GitHub Actions for deployment  
+
+### Core Folders  
+
+- `src/`  
+  The main working directory of the project.  
+  This contains the survey itself, including:
+  - Question structure  
+  - Conditional logic  
+  - Form handling  
+  - User interface components  
+
+- `public/`  
+  Stores static assets that are served directly (e.g. images, icons).  
+
+- `docs/`  
+  Contains documentation files for the project (e.g. README, supporting materials).  
+
+- `.github/workflows/`  
+  Contains GitHub Actions workflows used for automated deployment (e.g. publishing the survey to GitHub Pages).  
+
+---
+
+### Key File Types  
+
+- `.tsx` (TypeScript React files)  
+  These are the most important files in the project.  
+  They define:
+  - The survey layout  
+  - Questions and inputs  
+  - Interactive behaviour  
+  - Conditional logic (e.g. showing questions based on answers)  
+
+- `.ts` (TypeScript files)  
+  Used for:
+  - Helper functions  
+  - Data handling  
+  - Submission logic (e.g. sending responses to Google Sheets)  
+
+- `.css`  
+  Styling files used to control layout, colours, and appearance.  
+  Tailwind CSS is used, so many styles are applied directly in `.tsx` files using utility classes.  
+
+- `.html`  
+  The main entry point of the web app (usually `index.html`).  
+  This is where the app is mounted and loaded in the browser.  
+
+---
+
+### Configuration Files  
+
+- `vite.config.ts`  
+  Configures how the project is built and served locally.  
+
+- `tailwind.config.ts`  
+  Controls Tailwind CSS settings (theme, colours, etc.).  
+
+- `tsconfig.json`  
+  Defines how TypeScript compiles the code.  
+
+- `package.json`  
+  Lists project dependencies and scripts.  
+  Common commands:
+  - `npm run dev` → run locally  
+  - `npm run build` → create production build  
+
+- `package-lock.json`  
+  Locks dependency versions to ensure consistent installs.  
+
+---
+
+### How Data Submission Works  
+
+Survey responses are handled in the code (usually within `.ts` or `.tsx` files):  
+
+1. User completes the survey  
+2. A submission function collects responses  
+3. Data is sent to a connected service (Google Sheets)  
+4. Responses are stored in **“Living with Predators Survey Responses”**  
+
+---
+
+### How to Navigate the Project  
+
+If you want to:  
+
+- **Edit questions** → go to `src/` and find the survey component (`.tsx`)  
+- **Change logic (e.g. conditional questions)** → look for functions or state handling in `.tsx` files  
+- **Fix data submission** → find the function sending data (likely in `.ts` or `.tsx`)  
+- **Change styling** → edit Tailwind classes in `.tsx` or config in `tailwind.config.ts`  
+- **Deploy changes** → push to GitHub (handled by workflows)  
+
+---
+
+**How it works (briefly):**  
+- Users complete the survey via the deployed webpage  
+- Responses are submitted through a form integration/API  
+- Data is securely stored in the connected Google Sheet  
+- No personally identifiable information is collected  
+
+---
+
+## Ethics and Participation  
+
+Participation in this study is entirely voluntary. You may withdraw from the survey at any time prior to submitting your responses, for any reason. Once the survey has been submitted, all responses are fully anonymous and cannot be withdrawn.  
+
+By submitting this survey, you indicate your consent for your responses to be used for scientific research purposes. All data collected are anonymous and confidential and may be used in academic publications, reports, and presentations. No personally identifiable information will be collected or stored.  
+
+Participants are asked to respond honestly and to the best of their ability. There are no right or wrong answers.  
+
+This research has received full ethical approval from Ulster University and is being conducted in accordance with the University’s ethical guidelines for research involving human participants.  
+
+By proceeding with this survey, you confirm that you are 
+- Aged 18 years or over
+- That you have read and understood the information provided
+- Reside on the island of Ireland.  
+
+---
+
+## Development  
+
+To run the project locally:
 
 ```bash
 npm install
-npm run dev            # http://localhost:5173
-npm test               # unit tests
-npm run typecheck
-npm run build          # generates schema, typechecks, builds
-npm run preview        # serve the built ./dist
-```
-
-With no `VITE_SUBMIT_URL` set, the submit step logs the payload to the browser
-console and shows the thank-you screen, so you can click through the full flow
-locally without touching Google.
-
-## Updating survey content
-
-The researcher edits `docs/form.xlsx` in Excel / Numbers / Google Sheets. Then:
-
-```bash
-npm run generate:schema        # re-emits src/survey/schema.generated.ts
-npm run generate:header-row    # re-emits server/apps-script/header-row.tsv
-```
-
-Commit both regenerated files. CI fails the build if the generated schema is
-out of date relative to `docs/form.xlsx`.
-
-If new columns appeared in the header row, paste the new header into row 1 of
-the Google Sheet (existing rows keep their values; new columns are blank for
-older submissions).
-
-## First-time setup
-
-### 1. Create the GitHub repository
-
-1. Create an empty repo on GitHub (any name — the site auto-detects it).
-2. Push this code:
-   ```bash
-   git remote add origin git@github.com:<you>/<repo>.git
-   git push -u origin main
-   ```
-
-### 2. Enable GitHub Pages
-
-1. Repo **Settings → Pages**.
-2. Source: **GitHub Actions**.
-3. Push to `main` (or run the **Deploy** workflow manually from the Actions
-   tab). After a couple of minutes the site is live at
-   `https://<you>.github.io/<repo>/`.
-
-### 3. Wire up the Google Sheet backend
-
-Follow [`server/apps-script/README.md`](server/apps-script/README.md). It is a
-one-time process: create a Sheet, paste `Code.gs` into its Apps Script editor,
-deploy as a Web App, and paste the resulting URL into the GitHub repo variable
-`VITE_SUBMIT_URL` (Repo **Settings → Secrets and variables → Actions →
-Variables**). Re-run the deploy workflow and submissions will start landing in
-the Sheet.
-
-### 4. Swap in the real species photos
-
-`public/species/fox.jpg` and `public/species/pm.jpg` currently hold
-`loremflickr` placeholders. Before sharing the survey publicly, replace both
-files with licensed photos of a red fox and a European pine marten. Filenames
-must match exactly. `public/species/Consent.png` is optional — drop a file
-with that name to render a header image on the welcome page.
-
-## Key design decisions
-
-- **XLSForm as source of truth.** The Survey123 `.xlsx` is the canonical
-  content definition. A build step compiles it into a typed TypeScript schema;
-  edits flow from Excel, not code.
-- **100-step slider replaces every 5-point Likert.** The slider distinguishes
-  "not answered" (`null`) from "answered at 0" so data quality is preserved.
-- **Postcode validation accepts only NI BT postcodes or Irish Eircodes.**
-- **Session-scoped draft persistence.** A refresh mid-survey doesn't lose
-  progress; a closed tab does, which avoids stale drafts on shared devices.
-- **Idempotent submission.** Each session gets a submission id; the Apps
-  Script skips duplicates so retries can't create extra rows.
+npm run dev
