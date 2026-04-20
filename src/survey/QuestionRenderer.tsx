@@ -8,10 +8,7 @@ import { TextArea } from "../components/ui/TextArea";
 import { RiskSlider } from "../components/ui/RiskSlider";
 import { RiskSliderGroup } from "../components/ui/RiskSliderGroup";
 import { ChoiceMatrix } from "../components/ui/ChoiceMatrix";
-import {
-  validateIrishOrNIPostcode,
-  postcodeErrorMessage,
-} from "./validators/postcode";
+import { validateIrishOrNIPostcode, postcodeErrorMessage } from "./validators/postcode";
 
 const FREE_TEXT_NOTICE =
   "Please do not include identifying information (names, phone numbers, addresses) in your answer.";
@@ -29,10 +26,7 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
   switch (q.kind) {
     case "note":
       return (
-        <section
-          aria-labelledby={labelId}
-          className="rounded-xl bg-stone-100 p-4 text-sm text-stone-700"
-        >
+        <section aria-labelledby={labelId} className="rounded-xl bg-stone-100 p-4 text-sm text-stone-700">
           <p id={labelId}>{q.prompt}</p>
         </section>
       );
@@ -48,7 +42,7 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
             name={q.id}
             choices={q.choices}
             value={typeof value === "string" ? value : null}
-            onChange={(v: AnswerValue) => onAnswer(q.id, v)}
+            onChange={(v) => onAnswer(q.id, v)}
             layout={q.layout}
             ariaLabelledby={labelId}
           />
@@ -66,7 +60,7 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
             name={q.id}
             choices={q.choices}
             value={Array.isArray(value) ? (value as string[]) : []}
-            onChange={(v: AnswerValue) => onAnswer(q.id, v)}
+            onChange={(v) => onAnswer(q.id, v)}
             ariaLabelledby={labelId}
           />
         </section>
@@ -81,7 +75,7 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
           {q.hint && <HelperText>{q.hint}</HelperText>}
           <RiskSlider
             value={typeof value === "number" ? value : null}
-            onChange={(v: number) => onAnswer(q.id, v)}
+            onChange={(v) => onAnswer(q.id, v)}
             leftLabel={q.leftLabel}
             rightLabel={q.rightLabel}
             anchors={q.anchors}
@@ -92,6 +86,8 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
       );
 
     case "slider-group": {
+      // Slider-group item answers live as top-level keys in the answers map
+      // so that visibleIf predicates referencing `${pm_pet}` etc. resolve.
       const values: Record<string, number | null> = {};
       for (const item of q.items) {
         const v = answers[item.id];
@@ -109,13 +105,14 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
             anchors={q.anchors}
             items={q.items}
             values={values}
-            onChange={(itemId, v: number) => onAnswer(itemId, v)}
+            onChange={(itemId, v) => onAnswer(itemId, v)}
           />
         </section>
       );
     }
 
     case "choice-matrix": {
+      // Choice-matrix item answers also live as flat top-level keys.
       const values: Record<string, string | null> = {};
       for (const item of q.items) {
         const v = answers[item.id];
@@ -132,37 +129,17 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
             items={q.items}
             choices={q.choices}
             values={values}
-            onChange={(itemId, v: AnswerValue) => onAnswer(itemId, v)}
+            onChange={(itemId, v) => onAnswer(itemId, v)}
           />
         </section>
       );
     }
 
     case "text": {
-      const textValue = typeof value === "string" ? value : "";
-
       if (q.validate === "postcode-ie-ni") {
-        return (
-          <section aria-labelledby={labelId} className="space-y-3">
-            <FieldLabel id={labelId} required={q.required}>
-              {q.prompt}
-            </FieldLabel>
-            {q.hint && <HelperText>{q.hint}</HelperText>}
-            <TextInput
-              id={q.id}
-              value={textValue}
-              onChange={(e) => onAnswer(q.id, e.target.value)}
-              aria-labelledby={labelId}
-              autoCapitalize="characters"
-              autoCorrect="off"
-              spellCheck={false}
-              placeholder="e.g. BT12 5AB or D02 X285"
-            />
-            <HelperText>{FREE_TEXT_NOTICE}</HelperText>
-          </section>
-        );
+        return <PostcodeField question={q} value={value} onChange={(v) => onAnswer(q.id, v)} labelId={labelId} />;
       }
-
+      const textValue = typeof value === "string" ? value : "";
       return (
         <section aria-labelledby={labelId} className="space-y-3">
           <FieldLabel id={labelId} required={q.required}>
@@ -191,3 +168,107 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
     }
   }
 }
+
+function PostcodeField({
+  question: q,
+  value,
+  onChange,
+  labelId,
+}: {
+  question: Extract<Question, { kind: "text" }>;
+  value: AnswerValue | undefined;
+  onChange: (v: AnswerValue) => void;
+  labelId: string;
+}) {
+  const [touched, setTouched] = useState(false);
+
+  const raw = typeof value === "string" ? value : "";
+
+  const result = useMemo(() => {
+    if (!raw) return null;
+
+    const cleaned = raw.toUpperCase().trim();
+
+    // remove spaces for counting rules
+    const compact = cleaned.replace(/\s/g, "");
+
+    const digitCount = (compact.match(/\d/g) || []).length;
+
+    // ❌ too long (max 9 chars excluding spaces)
+    if (compact.length > 9) {
+      return { ok: false, reason: "too_long" };
+    }
+
+    // ❌ too many digits (max 5 total)
+    if (digitCount > 5) {
+      return { ok: false, reason: "too_many_numbers" };
+    }
+
+    // ❌ invalid characters
+    if (!/^[A-Z0-9\s]*$/.test(cleaned)) {
+      return { ok: false, reason: "invalid_chars" };
+    }
+
+    // 🇮🇪 Eircode rough pattern (loose)
+    const ieLike = /^[A-Z]\d{2}\s?[A-Z0-9]{0,4}$/;
+
+    // 🇬🇧 NI rough pattern (loose BT)
+    const niLike = /^BT[0-9A-Z\s]{0,6}$/;
+
+    // valid completed states
+    const ieFull = /^[A-Z]\d{2}\s[A-Z0-9]{3}$/;
+    const niFull = /^BT\d{1,2}\s?\d{1,4}[A-Z]?$/;
+
+    if (ieFull.test(cleaned)) {
+      return { ok: true, kind: "ie" as const };
+    }
+
+    if (niFull.test(cleaned)) {
+      return { ok: true, kind: "ni" as const };
+    }
+
+    // allow partial typing (no error shown)
+    if (ieLike.test(cleaned) || niLike.test(cleaned)) {
+      return null;
+    }
+
+    return { ok: false, reason: "invalid_format" };
+  }, [raw]);
+
+  const errorMessage =
+    touched && result && !result.ok ? postcodeErrorMessage(result.reason) : null;
+
+  return (
+    <section aria-labelledby={labelId} className="space-y-3">
+      <FieldLabel id={labelId} required={q.required}>
+        {q.prompt}
+      </FieldLabel>
+
+      {q.hint && <HelperText>{q.hint}</HelperText>}
+
+      <TextInput
+        id={q.id}
+        value={raw}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={() => setTouched(true)}
+        aria-labelledby={labelId}
+        error={errorMessage}
+        autoCapitalize="characters"
+        autoCorrect="off"
+        spellCheck={false}
+        placeholder="e.g. BT12 5AB or D02 X285"
+      />
+
+      {errorMessage && <HelperText tone="error">{errorMessage}</HelperText>}
+
+      {result && result.ok && (
+        <HelperText>
+          {result.kind === "ni"
+            ? "Northern Ireland postcode"
+            : "Irish Eircode"}{" "}
+          — thanks.
+        </HelperText>
+      )}
+    </section>
+  );
+}}
