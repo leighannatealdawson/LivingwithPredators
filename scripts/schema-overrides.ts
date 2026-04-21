@@ -23,16 +23,64 @@
 export interface QuestionPatch {
   prompt?: string;
   hint?: string;
+  required?: boolean;
   leftLabel?: string;
   rightLabel?: string;
   anchors?: string[];
   choices?: Array<{ value: string; label: string }>;
   multi?: boolean;
   exclusive?: string;
+  showPercent?: boolean;
+  defaultValue?: number;
   /** Replaces the translated `visibleIf` body. Must be a JS expression that
    *  references `answers` and any helpers defined in `helpersBlock` below. */
   visibleIfBody?: string;
 }
+
+/**
+ * Full replacement for a parsed question. Use this when an override needs to
+ * change the `kind` (e.g. converting a select_one into a slider). The
+ * original question's visibleIf is preserved unless the replacement supplies
+ * its own (via a separate entry in questionPatches).
+ */
+export type QuestionReplacement =
+  | {
+      kind: "single";
+      id: string;
+      prompt: string;
+      hint?: string;
+      required: boolean;
+      choices: Array<{ value: string; label: string }>;
+      layout: "horizontal" | "vertical";
+    }
+  | {
+      kind: "multi";
+      id: string;
+      prompt: string;
+      hint?: string;
+      required: boolean;
+      choices: Array<{ value: string; label: string }>;
+    }
+  | {
+      kind: "slider";
+      id: string;
+      prompt: string;
+      hint?: string;
+      required: boolean;
+      leftLabel: string;
+      rightLabel: string;
+      anchors: string[];
+      showPercent?: boolean;
+      defaultValue?: number;
+    }
+  | {
+      kind: "text";
+      id: string;
+      prompt: string;
+      hint?: string;
+      required: boolean;
+      multiline: boolean;
+    };
 
 const CONFIDENCE_ANCHORS = [
   "Not at all confident",
@@ -57,6 +105,30 @@ const hasLossesPredicate =
 
 const expPredicate = (key: string, species: "pm" | "fox") =>
   `hasAnyInteraction(answers) && hasSpecies(answers["${key}"], "${species}")`;
+
+const SENTIMENT_ANCHORS = [
+  "Completely negative",
+  "Somewhat negative",
+  "Neutral",
+  "Somewhat positive",
+  "Completely positive",
+];
+
+/** Build a sentiment-slider replacement for one of the sp_*_exp_* questions.
+ *  These were originally single-choice radios; we render them as sliders so
+ *  the conditional follow-ups stay consistent with the other Likert-style
+ *  questions in the survey. */
+const sentimentSlider = (id: string, prompt: string): QuestionReplacement => ({
+  kind: "slider",
+  id,
+  prompt,
+  required: false,
+  leftLabel: "Completely negative",
+  rightLabel: "Completely positive",
+  anchors: SENTIMENT_ANCHORS,
+  showPercent: false,
+  defaultValue: 50,
+});
 
 export const questionPatches: Record<string, QuestionPatch> = {
   // Species-ID prompts: generator pulls "Photo A / Photo B" verbatim from the
@@ -128,6 +200,60 @@ export const questionPatches: Record<string, QuestionPatch> = {
   season: { visibleIfBody: hasLossesPredicate },
   loss_details: { visibleIfBody: hasLossesPredicate },
   signs_losses: { visibleIfBody: hasLossesPredicate },
+};
+
+export const questionReplacements: Record<string, QuestionReplacement> = {
+  // Convert each of the 12 conditional sentiment questions from a 5-option
+  // select_one (radios) into a sentiment slider. The original prompt copy is
+  // preserved verbatim so the XLSForm remains the source of wording.
+  sp_local_exp_pm: sentimentSlider(
+    "sp_local_exp_pm",
+    "How did you feel about seeing a pine marten in your local area?",
+  ),
+  sp_property_exp_pm: sentimentSlider(
+    "sp_property_exp_pm",
+    "How did you feel about seeing a pine marten in your garden or on your property?",
+  ),
+  sp_denning_exp_pm: sentimentSlider(
+    "sp_denning_exp_pm",
+    "How did you feel about a pine marten denning in your home or outbuildings?",
+  ),
+  sp_bins_exp_pm: sentimentSlider(
+    "sp_bins_exp_pm",
+    "How did you feel about a pine marten accessing bins?",
+  ),
+  sp_damage_exp_pm: sentimentSlider(
+    "sp_damage_exp_pm",
+    "How did you feel about damage to your property caused by a pine marten?",
+  ),
+  sp_losses_exp_pm: sentimentSlider(
+    "sp_losses_exp_pm",
+    "How did you feel about losing poultry, livestock, gamebirds, or pets to a pine marten?",
+  ),
+  sp_local_exp_fox: sentimentSlider(
+    "sp_local_exp_fox",
+    "How did you feel about seeing a fox in your local area?",
+  ),
+  sp_property_exp_fox: sentimentSlider(
+    "sp_property_exp_fox",
+    "How did you feel about seeing a fox in your garden or on your property?",
+  ),
+  sp_denning_exp_fox: sentimentSlider(
+    "sp_denning_exp_fox",
+    "How did you feel about a fox denning in your home or outbuildings?",
+  ),
+  sp_bins_exp_fox: sentimentSlider(
+    "sp_bins_exp_fox",
+    "How did you feel about a fox accessing bins?",
+  ),
+  sp_damage_exp_fox: sentimentSlider(
+    "sp_damage_exp_fox",
+    "How did you feel about damage to your property caused by a fox?",
+  ),
+  sp_losses_exp_fox: sentimentSlider(
+    "sp_losses_exp_fox",
+    "How did you feel about losing poultry, livestock, gamebirds, or pets to a fox?",
+  ),
 };
 
 /**

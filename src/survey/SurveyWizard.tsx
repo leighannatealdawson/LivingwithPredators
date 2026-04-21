@@ -50,19 +50,19 @@ export function SurveyWizard() {
   // Per-question inline images on the intro page.
   const introInlineBefore = isIntro
     ? {
-        species_f: (
-          <SpeciesPhoto
-            src={foxExists ? base + "species/fox.jpg" : null}
-            letter="A"
-          />
-        ),
-        species_pm: (
-          <SpeciesPhoto
-            src={pmExists ? base + "species/pm.jpg" : null}
-            letter="B"
-          />
-        ),
-      }
+      species_f: (
+        <SpeciesPhoto
+          src={foxExists ? base + "species/fox.jpg" : null}
+          letter="A"
+        />
+      ),
+      species_pm: (
+        <SpeciesPhoto
+          src={pmExists ? base + "species/pm.jpg" : null}
+          letter="B"
+        />
+      ),
+    }
     : undefined;
 
   return (
@@ -148,7 +148,6 @@ function SpeciesPhoto({ src, letter }: { src: string | null; letter: "A" | "B" }
         {src ? (
           <img
             src={src}
-            alt={`Photo ${letter}`}
             className="h-full w-full object-cover"
             loading="lazy"
           />
@@ -158,9 +157,7 @@ function SpeciesPhoto({ src, letter }: { src: string | null; letter: "A" | "B" }
           </div>
         )}
       </div>
-      <figcaption className="mt-2 text-center text-xs uppercase tracking-wide text-stone-500">
-        Photo {letter}
-      </figcaption>
+
     </figure>
   );
 }

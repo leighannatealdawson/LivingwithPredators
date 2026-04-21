@@ -45,4 +45,20 @@ describe("validateIrishOrNIPostcode", () => {
       if (!r.ok) expect(r.reason).toBe("unrecognised");
     }
   });
+
+  it("accepts partial NI outward codes", () => {
+    for (const input of ["BT56", "bt56", "BT5", "BT12", " bt9 "]) {
+      const r = validateIrishOrNIPostcode(input);
+      expect(r.ok).toBe(true);
+      if (r.ok) expect(r.kind).toBe("ni-partial");
+    }
+  });
+
+  it("accepts partial Eircode routing keys", () => {
+    for (const input of ["D02", "a63", "N91"]) {
+      const r = validateIrishOrNIPostcode(input);
+      expect(r.ok).toBe(true);
+      if (r.ok) expect(r.kind).toBe("eircode-partial");
+    }
+  });
 });

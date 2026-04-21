@@ -53,14 +53,27 @@ const riskQuestions: Question[] = [q("pm_risk"), q("fox_risk")];
 // Tolerance / management page
 const toleranceQuestions: Question[] = [q("pm_tolerance"), q("fox_tolerance")];
 
-// Interactions page: gating questions + conditional experience + conditional loss details
-// Per-location experience sentiment questions (sp_*_exp_pm / sp_*_exp_fox)
-// are intentionally omitted — the researcher has removed them from scope for
-// now. The season + loss-details follow-ups below are kept because they add
-// useful context when the participant reports animal losses.
+// Interactions page: gating matrix + per-location sentiment sliders (shown
+// only when the matrix indicates an interaction with that species) + season
+// and loss-details follow-ups when losses were reported.
 const interactionsQuestions: Question[] = [
   q("sp_local_matrix"),
   q("other_interactions"),
+  // Pine marten sentiment sliders — each is shown only if the matching sp_*
+  // row includes "pm".
+  q("sp_local_exp_pm"),
+  q("sp_property_exp_pm"),
+  q("sp_denning_exp_pm"),
+  q("sp_bins_exp_pm"),
+  q("sp_damage_exp_pm"),
+  q("sp_losses_exp_pm"),
+  // Fox sentiment sliders — shown only if the matching sp_* row includes "fox".
+  q("sp_local_exp_fox"),
+  q("sp_property_exp_fox"),
+  q("sp_denning_exp_fox"),
+  q("sp_bins_exp_fox"),
+  q("sp_damage_exp_fox"),
+  q("sp_losses_exp_fox"),
   q("season"),
   q("loss_details"),
   q("signs_losses"),

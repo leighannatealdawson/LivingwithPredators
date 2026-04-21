@@ -12,7 +12,11 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import ExcelJS from "exceljs";
-import { questionPatches, helpersBlock } from "./schema-overrides";
+import {
+  questionPatches,
+  questionReplacements,
+  helpersBlock,
+} from "./schema-overrides";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..");
@@ -167,7 +171,14 @@ interface BaseQ {
 type Question =
   | (BaseQ & { kind: "single"; choices: Array<{ value: string; label: string }>; layout: "horizontal" | "vertical" })
   | (BaseQ & { kind: "multi"; choices: Array<{ value: string; label: string }> })
-  | (BaseQ & { kind: "slider"; leftLabel: string; rightLabel: string; anchors: string[] })
+  | (BaseQ & {
+      kind: "slider";
+      leftLabel: string;
+      rightLabel: string;
+      anchors: string[];
+      showPercent?: boolean;
+      defaultValue?: number;
+    })
   | (BaseQ & {
       kind: "slider-group";
       items: Array<{ id: string; label: string }>;
@@ -273,7 +284,7 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
           id: r.name,
           prompt: r.label || "",
           hint: r.hint || undefined,
-          required: true,
+          required: false,
           choices: listChoices,
           layout,
           ...(rowCombined
@@ -306,7 +317,7 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
       id: mrows[0].name + "_matrix",
       prompt,
       hint: frame.hint || mrows[0].hint || undefined,
-      required: true,
+      required: false,
       items: mrows.map((r) => ({ id: r.name, label: r.label })),
       choices: listChoices,
       ...(combined ? { visibleIfExpr: combined, visibleIfBody: translateRelevant(combined) } : {}),
@@ -344,7 +355,7 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
       kind: "slider-group",
       id: frame.name || lrows[0].name,
       prompt: frame.label,
-      required: true,
+      required: false,
       leftLabel,
       rightLabel,
       anchors,
@@ -456,7 +467,7 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
         id: row.name,
         prompt: row.label || "",
         hint: row.hint || undefined,
-        required: true,
+        required: false,
         choices: listChoices,
         layout,
         ...(rel ? { visibleIfExpr: rel, visibleIfBody: translateRelevant(rel) } : {}),
@@ -495,7 +506,7 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
         id: row.name,
         prompt: row.label,
         hint: row.hint || undefined,
-        required: row.name === "postcode",
+        required: false,
         multiline,
         validate,
         ...(rel ? { visibleIfExpr: rel, visibleIfBody: translateRelevant(rel) } : {}),
@@ -514,7 +525,7 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
         id: row.name,
         prompt: row.label,
         hint: row.hint || undefined,
-        required: true,
+        required: false,
         leftLabel: "Not at all confident",
         rightLabel: "Very confident",
         anchors: [],
@@ -542,7 +553,7 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
         id: row.name,
         prompt: row.label,
         hint: row.hint || undefined,
-        required: true,
+        required: false,
         leftLabel: listChoices[0]?.label || "",
         rightLabel: listChoices[listChoices.length - 1]?.label || "",
         anchors: listChoices.map((c) => c.label),
@@ -565,16 +576,33 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
 }
 
 /**
- * Apply hand-written patches from schema-overrides.ts. Patches either replace
- * scalar fields (prompt, anchors, etc.) or override the translated visibleIf
- * body with a custom expression.
+ * Apply hand-written overrides from schema-overrides.ts. First, any full
+ * replacements (swap a question's kind and content). Then, scalar patches
+ * and visibleIf body rewrites.
  */
 function applyOverrides(questions: Question[]): void {
-  for (const q of questions) {
+  for (let i = 0; i < questions.length; i++) {
+    const existing = questions[i];
+    const replacement = questionReplacements[existing.id];
+    if (replacement) {
+      // Preserve the original visibleIf unless the replacement provides its
+      // own. This lets us change kind without re-writing visibility rules.
+      const next: Question = {
+        ...(replacement as Question),
+      };
+      if (next.visibleIfBody === undefined && existing.visibleIfBody !== undefined) {
+        next.visibleIfBody = existing.visibleIfBody;
+        next.visibleIfExpr = existing.visibleIfExpr;
+      }
+      questions[i] = next;
+    }
+
+    const q = questions[i];
     const patch = questionPatches[q.id];
     if (!patch) continue;
     if (patch.prompt !== undefined) q.prompt = patch.prompt;
     if (patch.hint !== undefined) q.hint = patch.hint;
+    if (patch.required !== undefined) q.required = patch.required;
     if (patch.visibleIfBody !== undefined) {
       q.visibleIfBody = patch.visibleIfBody;
       q.visibleIfExpr = q.visibleIfExpr ?? "<override>";
@@ -583,6 +611,10 @@ function applyOverrides(questions: Question[]): void {
       if (patch.leftLabel !== undefined) q.leftLabel = patch.leftLabel;
       if (patch.rightLabel !== undefined) q.rightLabel = patch.rightLabel;
       if (patch.anchors !== undefined) q.anchors = patch.anchors;
+    }
+    if (q.kind === "slider") {
+      if (patch.showPercent !== undefined) q.showPercent = patch.showPercent;
+      if (patch.defaultValue !== undefined) q.defaultValue = patch.defaultValue;
     }
     if (q.kind === "choice-matrix" || q.kind === "single" || q.kind === "multi") {
       if (patch.choices !== undefined) q.choices = patch.choices;
@@ -633,6 +665,10 @@ function emit(parsed: ParsedForm): string {
           base.push(`    leftLabel: ${JSON.stringify(q.leftLabel)}`);
           base.push(`    rightLabel: ${JSON.stringify(q.rightLabel)}`);
           base.push(`    anchors: ${JSON.stringify(q.anchors)}`);
+          if (q.showPercent !== undefined)
+            base.push(`    showPercent: ${JSON.stringify(q.showPercent)}`);
+          if (q.defaultValue !== undefined)
+            base.push(`    defaultValue: ${JSON.stringify(q.defaultValue)}`);
           break;
         case "slider-group":
           base.push(`    leftLabel: ${JSON.stringify(q.leftLabel)}`);

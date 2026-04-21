@@ -12,6 +12,7 @@ export interface RiskSliderGroupProps {
   onChange: (itemId: string, value: number) => void;
   showPercent?: boolean;
   defaultValue?: number;
+  required?: boolean;
 }
 
 /**
@@ -29,6 +30,7 @@ export function RiskSliderGroup({
   onChange,
   showPercent,
   defaultValue,
+  required = false,
 }: RiskSliderGroupProps) {
   const [showAnchors, setShowAnchors] = useState(false);
   const hasAnchors = !!(anchors && anchors.length > 2);
@@ -38,9 +40,11 @@ export function RiskSliderGroup({
       <div>
         <h3 className="!font-sans !text-base font-semibold !text-stone-900 leading-snug">
           <LabelText text={prompt} />
-          <span aria-hidden="true" className="ml-1 text-forest-700">
-            *
-          </span>
+          {required && (
+            <span aria-hidden="true" className="ml-1 text-forest-700">
+              *
+            </span>
+          )}
         </h3>
         {hasAnchors && (
           <button

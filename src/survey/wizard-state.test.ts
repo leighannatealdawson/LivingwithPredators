@@ -7,20 +7,8 @@ describe("canProceedFrom", () => {
     expect(canProceedFrom("welcome", { __consent: true })).toBe(true);
   });
 
-  it("blocks interactions if required questions unanswered", () => {
-    expect(canProceedFrom("interactions", {})).toBe(false);
-  });
-
-  it("allows interactions once the gating sp_* answers are set", () => {
-    const answers = {
-      sp_local: ["neither"],
-      sp_property: ["neither"],
-      sp_denning: ["neither"],
-      sp_bins: ["neither"],
-      sp_damage: ["neither"],
-      sp_losses: ["neither"],
-    };
-    expect(canProceedFrom("interactions", answers)).toBe(true);
+  it("allows interactions through with no answers (all questions are optional)", () => {
+    expect(canProceedFrom("interactions", {})).toBe(true);
   });
 });
 

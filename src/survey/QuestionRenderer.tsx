@@ -84,6 +84,8 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
             anchors={q.anchors}
             ariaLabel={`${q.prompt} — scale from ${q.leftLabel} to ${q.rightLabel}`}
             showHeaderLabels
+            showPercent={q.showPercent}
+            defaultValue={q.defaultValue}
           />
         </section>
       );
@@ -111,6 +113,7 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
             onChange={(itemId, v) => onAnswer(itemId, v)}
             showPercent={false}
             defaultValue={50}
+            required={q.required}
           />
         </section>
       );
@@ -141,6 +144,7 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
             exclusive={q.exclusive}
             values={values}
             onChange={(itemId, v) => onAnswer(itemId, v)}
+            required={q.required}
           />
         </section>
       );
@@ -217,7 +221,16 @@ function PostcodeField({
       />
       {errorMessage && <HelperText tone="error">{errorMessage}</HelperText>}
       {result && result.ok && (
-        <HelperText>{result.kind === "ni" ? "Northern Ireland postcode" : "Irish Eircode"} — thanks.</HelperText>
+        <HelperText>
+          {result.kind === "ni"
+            ? "Northern Ireland postcode"
+            : result.kind === "ni-partial"
+              ? "Northern Ireland outward code"
+              : result.kind === "eircode"
+                ? "Irish Eircode"
+                : "Irish Eircode routing key"}{" "}
+          — thanks.
+        </HelperText>
       )}
     </section>
   );

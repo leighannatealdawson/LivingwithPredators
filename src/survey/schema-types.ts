@@ -33,6 +33,12 @@ export interface SliderQuestion extends QuestionBase {
   leftLabel: string;
   rightLabel: string;
   anchors: string[];
+  /** Hide the 0-100 percentage readout (good for categorical/bipolar scales
+   *  where the raw number is meaningless). */
+  showPercent?: boolean;
+  /** Initial visual position when the value is null (e.g. 50 for a bipolar
+   *  scale that should start centered on "Neutral"). */
+  defaultValue?: number;
 }
 
 export interface SliderGroupQuestion extends QuestionBase {

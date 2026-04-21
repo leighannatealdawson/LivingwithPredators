@@ -18,6 +18,7 @@ export interface ChoiceMatrixProps {
   exclusive?: string;
   values: Record<string, string | string[] | null>;
   onChange: (itemId: string, value: string | string[]) => void;
+  required?: boolean;
 }
 
 /**
@@ -35,15 +36,18 @@ export function ChoiceMatrix({
   exclusive,
   values,
   onChange,
+  required = false,
 }: ChoiceMatrixProps) {
   return (
     <section className="space-y-4">
       <div>
         <h3 className="!font-sans !text-base font-semibold !text-stone-900 leading-snug">
           <LabelText text={prompt} />
-          <span aria-hidden="true" className="ml-1 text-forest-700">
-            *
-          </span>
+          {required && (
+            <span aria-hidden="true" className="ml-1 text-forest-700">
+              *
+            </span>
+          )}
         </h3>
         {hint && <p className="mt-1 text-sm text-stone-600">{hint}</p>}
       </div>
