@@ -60,6 +60,10 @@ export interface ChoiceMatrixQuestion extends QuestionBase {
    *  exclusive: selecting it clears the rest of the row, and selecting any
    *  other option removes this one. Typical use: "neither". */
   exclusive?: string;
+  /** Per-row follow-up questions. Keyed by row item id and then by choice
+   *  value: when the row's selection includes that choice, the referenced
+   *  question is rendered directly underneath the row. */
+  followUps?: Record<string, Record<string, string>>;
 }
 
 export interface TextQuestion extends QuestionBase {

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { LabelText } from "./LabelText";
 
 interface Choice {
@@ -19,6 +20,9 @@ export interface ChoiceMatrixProps {
   values: Record<string, string | string[] | null>;
   onChange: (itemId: string, value: string | string[]) => void;
   required?: boolean;
+  /** Optional: render extra JSX (e.g. follow-up questions) inside each row,
+   *  directly underneath its choice buttons. Returning null/undefined skips. */
+  renderAfterRow?: (itemId: string) => ReactNode;
 }
 
 /**
@@ -37,6 +41,7 @@ export function ChoiceMatrix({
   values,
   onChange,
   required = false,
+  renderAfterRow,
 }: ChoiceMatrixProps) {
   return (
     <section className="space-y-4">
@@ -118,10 +123,28 @@ export function ChoiceMatrix({
                   );
                 })}
               </div>
+              {renderAfterRow && (
+                <FollowUpSlot content={renderAfterRow(item.id)} />
+              )}
             </li>
           );
         })}
       </ul>
     </section>
+  );
+}
+
+/** Renders follow-up JSX in a subtle inset so it reads as belonging to the row
+ *  above rather than as a new top-level question. Hidden entirely if empty. */
+function FollowUpSlot({ content }: { content: ReactNode }) {
+  if (!content) return null;
+  const hasContent = Array.isArray(content)
+    ? content.some((c) => c != null && c !== false)
+    : true;
+  if (!hasContent) return null;
+  return (
+    <div className="mt-4 space-y-4 border-l-2 border-forest-200 bg-stone-50 p-4">
+      {content}
+    </div>
   );
 }

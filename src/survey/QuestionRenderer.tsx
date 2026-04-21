@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { AnswerValue, Question } from "./schema-types";
+import { questionsById } from "./schema.generated";
 import { FieldLabel, HelperText } from "../components/ui/FieldLabel";
 import { LabelText } from "../components/ui/LabelText";
 import { RadioGroup } from "../components/ui/RadioGroup";
@@ -145,6 +146,29 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
             values={values}
             onChange={(itemId, v) => onAnswer(itemId, v)}
             required={q.required}
+            renderAfterRow={
+              q.followUps
+                ? (itemId) => {
+                    const selected = values[itemId];
+                    if (!Array.isArray(selected) || selected.length === 0) return null;
+                    const map = q.followUps![itemId] ?? {};
+                    return selected.flatMap((choiceValue) => {
+                      const followId = map[choiceValue];
+                      if (!followId) return [];
+                      const followQ = questionsById[followId];
+                      if (!followQ) return [];
+                      return [
+                        <QuestionRenderer
+                          key={followId}
+                          question={followQ}
+                          answers={answers}
+                          onAnswer={onAnswer}
+                        />,
+                      ];
+                    });
+                  }
+                : undefined
+            }
           />
         </section>
       );

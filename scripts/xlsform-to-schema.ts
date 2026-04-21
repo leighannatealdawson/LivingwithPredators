@@ -192,6 +192,7 @@ type Question =
       choices: Array<{ value: string; label: string }>;
       multi?: boolean;
       exclusive?: string;
+      followUps?: Record<string, Record<string, string>>;
     })
   | (BaseQ & { kind: "text"; multiline: boolean; validate?: "postcode-ie-ni" })
   | (BaseQ & { kind: "note" });
@@ -622,6 +623,7 @@ function applyOverrides(questions: Question[]): void {
     if (q.kind === "choice-matrix") {
       if (patch.multi !== undefined) q.multi = patch.multi;
       if (patch.exclusive !== undefined) q.exclusive = patch.exclusive;
+      if (patch.followUps !== undefined) q.followUps = patch.followUps;
     }
   }
 }
@@ -682,6 +684,8 @@ function emit(parsed: ParsedForm): string {
             base.push(`    exclusive: ${JSON.stringify(q.exclusive)}`);
           base.push(`    items: ${JSON.stringify(q.items)}`);
           base.push(`    choices: ${JSON.stringify(q.choices)}`);
+          if (q.followUps !== undefined)
+            base.push(`    followUps: ${JSON.stringify(q.followUps)}`);
           break;
         case "text":
           base.push(`    multiline: ${q.multiline}`);

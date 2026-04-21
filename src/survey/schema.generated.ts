@@ -152,6 +152,7 @@ export const questions: Question[] = [
     exclusive: "neither",
     items: [{"id":"sp_local","label":"Seen in my local area (e.g. nearby roads, woodland, fields)."},{"id":"sp_property","label":"Seen in my garden or on my property."},{"id":"sp_denning","label":"Experienced an animal denning (living or sleeping) in my home or outbuildings."},{"id":"sp_bins","label":"Experience an animal accessing  bins"},{"id":"sp_damage","label":"Experienced damage to my property."},{"id":"sp_losses","label":"Experienced loss of poultry, livestock, gamebirds, or pets."}],
     choices: [{"value":"fox","label":"Red fox"},{"value":"pm","label":"European pine marten"},{"value":"neither","label":"Neither"}],
+    followUps: {"sp_local":{"pm":"sp_local_exp_pm","fox":"sp_local_exp_fox"},"sp_property":{"pm":"sp_property_exp_pm","fox":"sp_property_exp_fox"},"sp_denning":{"pm":"sp_denning_exp_pm","fox":"sp_denning_exp_fox"},"sp_bins":{"pm":"sp_bins_exp_pm","fox":"sp_bins_exp_fox"},"sp_damage":{"pm":"sp_damage_exp_pm","fox":"sp_damage_exp_fox"},"sp_losses":{"pm":"sp_losses_exp_pm","fox":"sp_losses_exp_fox"}},
   },
   {
     id: "other_interactions",
@@ -163,7 +164,7 @@ export const questions: Question[] = [
   {
     id: "sp_local_exp_pm",
     kind: "slider",
-    prompt: "How did you feel about seeing a pine marten in your local area?",
+    prompt: "Pine marten — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",
@@ -175,7 +176,7 @@ export const questions: Question[] = [
   {
     id: "sp_property_exp_pm",
     kind: "slider",
-    prompt: "How did you feel about seeing a pine marten in your garden or on your property?",
+    prompt: "Pine marten — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",
@@ -187,7 +188,7 @@ export const questions: Question[] = [
   {
     id: "sp_denning_exp_pm",
     kind: "slider",
-    prompt: "How did you feel about a pine marten denning in your home or outbuildings?",
+    prompt: "Pine marten — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",
@@ -199,7 +200,7 @@ export const questions: Question[] = [
   {
     id: "sp_bins_exp_pm",
     kind: "slider",
-    prompt: "How did you feel about a pine marten accessing bins?",
+    prompt: "Pine marten — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",
@@ -211,7 +212,7 @@ export const questions: Question[] = [
   {
     id: "sp_damage_exp_pm",
     kind: "slider",
-    prompt: "How did you feel about damage to your property caused by a pine marten?",
+    prompt: "Pine marten — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",
@@ -223,7 +224,7 @@ export const questions: Question[] = [
   {
     id: "sp_losses_exp_pm",
     kind: "slider",
-    prompt: "How did you feel about losing poultry, livestock, gamebirds, or pets to a pine marten?",
+    prompt: "Pine marten — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",
@@ -235,7 +236,7 @@ export const questions: Question[] = [
   {
     id: "sp_local_exp_fox",
     kind: "slider",
-    prompt: "How did you feel about seeing a fox in your local area?",
+    prompt: "Fox — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",
@@ -247,7 +248,7 @@ export const questions: Question[] = [
   {
     id: "sp_property_exp_fox",
     kind: "slider",
-    prompt: "How did you feel about seeing a fox in your garden or on your property?",
+    prompt: "Fox — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",
@@ -259,7 +260,7 @@ export const questions: Question[] = [
   {
     id: "sp_denning_exp_fox",
     kind: "slider",
-    prompt: "How did you feel about a fox denning in your home or outbuildings?",
+    prompt: "Fox — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",
@@ -271,7 +272,7 @@ export const questions: Question[] = [
   {
     id: "sp_bins_exp_fox",
     kind: "slider",
-    prompt: "How did you feel about a fox accessing bins?",
+    prompt: "Fox — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",
@@ -283,7 +284,7 @@ export const questions: Question[] = [
   {
     id: "sp_damage_exp_fox",
     kind: "slider",
-    prompt: "How did you feel about damage to your property caused by a fox?",
+    prompt: "Fox — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",
@@ -295,7 +296,7 @@ export const questions: Question[] = [
   {
     id: "sp_losses_exp_fox",
     kind: "slider",
-    prompt: "How did you feel about losing poultry, livestock, gamebirds, or pets to a fox?",
+    prompt: "Fox — how did you feel about this?",
     required: false,
     leftLabel: "Completely negative",
     rightLabel: "Completely positive",

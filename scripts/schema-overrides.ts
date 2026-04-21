@@ -32,6 +32,7 @@ export interface QuestionPatch {
   exclusive?: string;
   showPercent?: boolean;
   defaultValue?: number;
+  followUps?: Record<string, Record<string, string>>;
   /** Replaces the translated `visibleIf` body. Must be a JS expression that
    *  references `answers` and any helpers defined in `helpersBlock` below. */
   visibleIfBody?: string;
@@ -166,7 +167,9 @@ export const questionPatches: Record<string, QuestionPatch> = {
   fox_risk: { leftLabel: "Very low risk", rightLabel: "Very high risk" },
 
   // Experience matrix: convert to multi-select with "Neither" as the
-  // mutually-exclusive option, and drop the redundant "Both" choice.
+  // mutually-exclusive option, and drop the redundant "Both" choice. The
+  // sentiment-slider follow-ups are attached per row + species so they
+  // appear inline directly under the row they relate to.
   sp_local_matrix: {
     prompt:
       "Which of the following experiences have you had with these animals? (select all that apply; choose Neither if none)",
@@ -177,6 +180,14 @@ export const questionPatches: Record<string, QuestionPatch> = {
       { value: "pm", label: "European pine marten" },
       { value: "neither", label: "Neither" },
     ],
+    followUps: {
+      sp_local: { pm: "sp_local_exp_pm", fox: "sp_local_exp_fox" },
+      sp_property: { pm: "sp_property_exp_pm", fox: "sp_property_exp_fox" },
+      sp_denning: { pm: "sp_denning_exp_pm", fox: "sp_denning_exp_fox" },
+      sp_bins: { pm: "sp_bins_exp_pm", fox: "sp_bins_exp_fox" },
+      sp_damage: { pm: "sp_damage_exp_pm", fox: "sp_damage_exp_fox" },
+      sp_losses: { pm: "sp_losses_exp_pm", fox: "sp_losses_exp_fox" },
+    },
   },
 
   // Rewrite the long sp_*_exp_* gating predicates to use helpers. The raw
@@ -202,58 +213,26 @@ export const questionPatches: Record<string, QuestionPatch> = {
   signs_losses: { visibleIfBody: hasLossesPredicate },
 };
 
+const PM_PROMPT = "Pine marten — how did you feel about this?";
+const FOX_PROMPT = "Fox — how did you feel about this?";
+
 export const questionReplacements: Record<string, QuestionReplacement> = {
   // Convert each of the 12 conditional sentiment questions from a 5-option
-  // select_one (radios) into a sentiment slider. The original prompt copy is
-  // preserved verbatim so the XLSForm remains the source of wording.
-  sp_local_exp_pm: sentimentSlider(
-    "sp_local_exp_pm",
-    "How did you feel about seeing a pine marten in your local area?",
-  ),
-  sp_property_exp_pm: sentimentSlider(
-    "sp_property_exp_pm",
-    "How did you feel about seeing a pine marten in your garden or on your property?",
-  ),
-  sp_denning_exp_pm: sentimentSlider(
-    "sp_denning_exp_pm",
-    "How did you feel about a pine marten denning in your home or outbuildings?",
-  ),
-  sp_bins_exp_pm: sentimentSlider(
-    "sp_bins_exp_pm",
-    "How did you feel about a pine marten accessing bins?",
-  ),
-  sp_damage_exp_pm: sentimentSlider(
-    "sp_damage_exp_pm",
-    "How did you feel about damage to your property caused by a pine marten?",
-  ),
-  sp_losses_exp_pm: sentimentSlider(
-    "sp_losses_exp_pm",
-    "How did you feel about losing poultry, livestock, gamebirds, or pets to a pine marten?",
-  ),
-  sp_local_exp_fox: sentimentSlider(
-    "sp_local_exp_fox",
-    "How did you feel about seeing a fox in your local area?",
-  ),
-  sp_property_exp_fox: sentimentSlider(
-    "sp_property_exp_fox",
-    "How did you feel about seeing a fox in your garden or on your property?",
-  ),
-  sp_denning_exp_fox: sentimentSlider(
-    "sp_denning_exp_fox",
-    "How did you feel about a fox denning in your home or outbuildings?",
-  ),
-  sp_bins_exp_fox: sentimentSlider(
-    "sp_bins_exp_fox",
-    "How did you feel about a fox accessing bins?",
-  ),
-  sp_damage_exp_fox: sentimentSlider(
-    "sp_damage_exp_fox",
-    "How did you feel about damage to your property caused by a fox?",
-  ),
-  sp_losses_exp_fox: sentimentSlider(
-    "sp_losses_exp_fox",
-    "How did you feel about losing poultry, livestock, gamebirds, or pets to a fox?",
-  ),
+  // select_one (radios) into a sentiment slider. Prompts are concise because
+  // the slider is rendered inline underneath the matching matrix row, which
+  // already names the experience context ("Seen in my garden", etc.).
+  sp_local_exp_pm: sentimentSlider("sp_local_exp_pm", PM_PROMPT),
+  sp_property_exp_pm: sentimentSlider("sp_property_exp_pm", PM_PROMPT),
+  sp_denning_exp_pm: sentimentSlider("sp_denning_exp_pm", PM_PROMPT),
+  sp_bins_exp_pm: sentimentSlider("sp_bins_exp_pm", PM_PROMPT),
+  sp_damage_exp_pm: sentimentSlider("sp_damage_exp_pm", PM_PROMPT),
+  sp_losses_exp_pm: sentimentSlider("sp_losses_exp_pm", PM_PROMPT),
+  sp_local_exp_fox: sentimentSlider("sp_local_exp_fox", FOX_PROMPT),
+  sp_property_exp_fox: sentimentSlider("sp_property_exp_fox", FOX_PROMPT),
+  sp_denning_exp_fox: sentimentSlider("sp_denning_exp_fox", FOX_PROMPT),
+  sp_bins_exp_fox: sentimentSlider("sp_bins_exp_fox", FOX_PROMPT),
+  sp_damage_exp_fox: sentimentSlider("sp_damage_exp_fox", FOX_PROMPT),
+  sp_losses_exp_fox: sentimentSlider("sp_losses_exp_fox", FOX_PROMPT),
 };
 
 /**

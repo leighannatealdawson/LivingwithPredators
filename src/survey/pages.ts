@@ -53,27 +53,12 @@ const riskQuestions: Question[] = [q("pm_risk"), q("fox_risk")];
 // Tolerance / management page
 const toleranceQuestions: Question[] = [q("pm_tolerance"), q("fox_tolerance")];
 
-// Interactions page: gating matrix + per-location sentiment sliders (shown
-// only when the matrix indicates an interaction with that species) + season
-// and loss-details follow-ups when losses were reported.
+// Interactions page: gating matrix (sentiment sliders render inline
+// underneath each matrix row via `followUps`) + season and loss-details
+// follow-ups when losses were reported.
 const interactionsQuestions: Question[] = [
   q("sp_local_matrix"),
   q("other_interactions"),
-  // Pine marten sentiment sliders — each is shown only if the matching sp_*
-  // row includes "pm".
-  q("sp_local_exp_pm"),
-  q("sp_property_exp_pm"),
-  q("sp_denning_exp_pm"),
-  q("sp_bins_exp_pm"),
-  q("sp_damage_exp_pm"),
-  q("sp_losses_exp_pm"),
-  // Fox sentiment sliders — shown only if the matching sp_* row includes "fox".
-  q("sp_local_exp_fox"),
-  q("sp_property_exp_fox"),
-  q("sp_denning_exp_fox"),
-  q("sp_bins_exp_fox"),
-  q("sp_damage_exp_fox"),
-  q("sp_losses_exp_fox"),
   q("season"),
   q("loss_details"),
   q("signs_losses"),
@@ -146,12 +131,22 @@ export const wizardPages: WizardPage[] = [
   },
 ];
 
-/** The canonical id lookup for any question belonging to any page. */
+/** The canonical id lookup for any question belonging to any page. Includes
+ *  the ids of any questions rendered inline via a choice-matrix's followUps. */
 export const allPageQuestionIds: Set<string> = new Set(
   wizardPages.flatMap((p) =>
     p.questions.flatMap((question) => {
-      if (question.kind === "slider-group" || question.kind === "choice-matrix") {
+      if (question.kind === "slider-group") {
         return [question.id, ...question.items.map((i) => i.id)];
+      }
+      if (question.kind === "choice-matrix") {
+        const ids = [question.id, ...question.items.map((i) => i.id)];
+        if (question.followUps) {
+          for (const perRow of Object.values(question.followUps)) {
+            for (const qid of Object.values(perRow)) ids.push(qid);
+          }
+        }
+        return ids;
       }
       return [question.id];
     }),
