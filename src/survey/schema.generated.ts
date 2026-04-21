@@ -1,11 +1,37 @@
 // ============================================================
 // GENERATED FROM docs/form.xlsx — DO NOT EDIT BY HAND.
 // Run `npm run generate:schema` to regenerate.
+// Overrides (prompt tweaks, multi-select matrix, helper-based
+// predicates, etc.) live in scripts/schema-overrides.ts — edit
+// that file, not this one.
 // ============================================================
 
 import type { Question } from "./schema-types";
 
 type Answers = Record<string, unknown>;
+
+/** Returns true if the sp_* answer (array from the new multi-select matrix,
+ *  or legacy string like 'pm' / 'fox' / 'both') indicates the given species. */
+function hasSpecies(v: unknown, species: "pm" | "fox"): boolean {
+  if (Array.isArray(v)) return v.includes(species);
+  if (typeof v === "string") return v === species || v === "both";
+  return false;
+}
+
+const SP_KEYS = [
+  "sp_local",
+  "sp_property",
+  "sp_denning",
+  "sp_bins",
+  "sp_damage",
+  "sp_losses",
+] as const;
+
+function hasAnyInteraction(answers: Answers): boolean {
+  return SP_KEYS.some(
+    (k) => hasSpecies(answers[k], "pm") || hasSpecies(answers[k], "fox"),
+  );
+}
 
 export const questions: Question[] = [
   {
@@ -29,7 +55,7 @@ export const questions: Question[] = [
     required: true,
     leftLabel: "Not at all confident",
     rightLabel: "Very confident",
-    anchors: [],
+    anchors: ["Not at all confident","Slightly confident","Moderately confident","Confident","Very confident"],
   },
   {
     id: "species_pm",
@@ -39,23 +65,15 @@ export const questions: Question[] = [
     choices: [{"value":"pine_marten","label":"Pine marten"},{"value":"fox","label":"Fox"},{"value":"stoat","label":"Stoat"},{"value":"ferret","label":"Ferret"},{"value":"domestic_cat","label":"Domestic cat"},{"value":"badger","label":"Badger"},{"value":"not_sure","label":"Not sure / I don’t know"}],
     layout: "horizontal",
   },
-
   {
-  id: "confidence_pm",
-  kind: "slider-group",
-  prompt: "How confident are you that you could recognise this animal if you saw it in person?",
-  required: true,
-  leftLabel: "Not at all confident",
-  rightLabel: "Very confident",
-  anchors: [
-  "Not at all confident",
-  "Slightly confident",
-  "Moderately confident",
-  "Confident",
-  "Very confident",  ],
-  items: [    {id: "confidence_pm", label: ""    }],
-},
-``
+    id: "confidence_pm",
+    kind: "slider",
+    prompt: "How confident are you that you could recognise this animal if you saw it in person?",
+    required: true,
+    leftLabel: "Not at all confident",
+    rightLabel: "Very confident",
+    anchors: ["Not at all confident","Slightly confident","Moderately confident","Confident","Very confident"],
+  },
   {
     id: "seen_pm_matrix",
     kind: "choice-matrix",
@@ -72,11 +90,8 @@ export const questions: Question[] = [
     required: true,
     leftLabel: "Completely unacceptable",
     rightLabel: "Completely acceptable",
-    anchors: ["Completely unacceptable","Somewhat unacceptable","Neutral","Somewhat acceptable","Completely acceptable"],
-    items: [{"id":"pm_a","label":"A. Pine marten is seen in its natural habitat (i.e. woodland)"},
-      {"id":"pm_b","label":"B. Pine marten is seen around homes or farms (i.e, gardens, yards, farmyards)"},
-      {"id":"pm_c","label":"C. Pine marten has denned in a house"},{"id":"pm_d","label":"D. Pine marten has attacked poultry and gamebirds"},
-      {"id":"pm_e","label":"E. Pine marten has been seen eating from a bin"}],
+    anchors: ["Completely unacceptable","Unacceptable","Somewhat unacceptable","Neutral","Somewhat acceptable","Acceptable","Completely acceptable"],
+    items: [{"id":"pm_a","label":"A. Pine marten is seen in its natural habitat (i.e. woodland)"},{"id":"pm_b","label":"B. Pine marten is seen around homes or farms (i.e, gardens, yards, farmyards)"},{"id":"pm_c","label":"C. Pine marten has denned in a house"},{"id":"pm_d","label":"D. Pine marten has attacked poultry and gamebirds"},{"id":"pm_e","label":"E. Pine marten has been seen eating from a bin"}],
   },
   {
     id: "fox_scenarios",
@@ -85,7 +100,7 @@ export const questions: Question[] = [
     required: true,
     leftLabel: "Completely unacceptable",
     rightLabel: "Completely acceptable",
-    anchors: ["Completely unacceptable","Somewhat unacceptable","Neutral","Somewhat acceptable","Completely acceptable"],
+    anchors: ["Completely unacceptable","Unacceptable","Somewhat unacceptable","Neutral","Somewhat acceptable","Acceptable","Completely acceptable"],
     items: [{"id":"fox_a","label":"A. Fox is seen in its natural habitat (i.e. woodland)"},{"id":"fox_b","label":"B. Fox is seen around homes or farms (i.e, gardens, yards, farmyards)"},{"id":"fox_c","label":"C. Fox has denned in a house"},{"id":"fox_d","label":"D. Fox has attacked poultry and gamebirds"},{"id":"fox_e","label":"E. Fox has been seen eating from a bin"}],
   },
   {
@@ -93,8 +108,8 @@ export const questions: Question[] = [
     kind: "slider-group",
     prompt: "How much risk do you believe pine martens pose in the following contexts? ",
     required: true,
-    leftLabel: "Very low risk - No noticeable impact or very rare incidents",
-    rightLabel: "Very high risk - Severe, ongoing, or widespread problems",
+    leftLabel: "Very low risk",
+    rightLabel: "Very high risk",
     anchors: ["Very low risk - No noticeable impact or very rare incidents","Low risk - Occasional or minor issues","Moderate risk - Some localised problems or occasional losses","High risk - Frequent problems or clear evidence of damage/losses","Very high risk - Severe, ongoing, or widespread problems"],
     items: [{"id":"pm_pet","label":"Pine marten: Risk to pets (e.g., dogs, cats, rabbits)"},{"id":"pm_poultry","label":"Pine marten: Risk to poultry/gamebirds (e.g., chickens, pheasants)"},{"id":"pm_livestock","label":"Pine marten: Risk to livestock excluding poultry (e.g., sheep, goats, pigs)"},{"id":"pm_protected","label":"Pine marten: Risk to protected species (e.g., red squirrels, native ground-nesting birds)"},{"id":"pm_humans","label":"Pine marten: Risk of injury to people"}],
   },
@@ -103,8 +118,8 @@ export const questions: Question[] = [
     kind: "slider-group",
     prompt: "How much risk do you believe foxes pose in the following contexts? ",
     required: true,
-    leftLabel: "Very low risk - No noticeable impact or very rare incidents",
-    rightLabel: "Very high risk - Severe, ongoing, or widespread problems",
+    leftLabel: "Very low risk",
+    rightLabel: "Very high risk",
     anchors: ["Very low risk - No noticeable impact or very rare incidents","Low risk - Occasional or minor issues","Moderate risk - Some localised problems or occasional losses","High risk - Frequent problems or clear evidence of damage/losses","Very high risk - Severe, ongoing, or widespread problems"],
     items: [{"id":"fox_pet","label":"Fox: Risk to pets (e.g., dogs, cats, rabbits)"},{"id":"fox_poultry","label":"Fox: Risk to poultry/gamebirds (e.g., chickens, pheasants)"},{"id":"fox_livestock","label":"Fox: Risk to livestock excluding poultry (e.g., sheep, goats, pigs)"},{"id":"fox_protected","label":"Fox: Risk to protected species (e.g., red squirrels, native ground-nesting birds)"},{"id":"fox_humans","label":"Fox: Risk of injury to people"}],
   },
@@ -131,10 +146,12 @@ export const questions: Question[] = [
   {
     id: "sp_local_matrix",
     kind: "choice-matrix",
-    prompt: "Which of the following experiences have you had with these animals?",
+    prompt: "Which of the following experiences have you had with these animals? (select all that apply; choose Neither if none)",
     required: true,
+    multi: true,
+    exclusive: "neither",
     items: [{"id":"sp_local","label":"Seen in my local area (e.g. nearby roads, woodland, fields)."},{"id":"sp_property","label":"Seen in my garden or on my property."},{"id":"sp_denning","label":"Experienced an animal denning (living or sleeping) in my home or outbuildings."},{"id":"sp_bins","label":"Experience an animal accessing  bins"},{"id":"sp_damage","label":"Experienced damage to my property."},{"id":"sp_losses","label":"Experienced loss of poultry, livestock, gamebirds, or pets."}],
-    choices: [{"value":"fox","label":"Red fox"},{"value":"pm","label":"European pine marten"},{"value":"both","label":"Both"},{"value":"neither","label":"Neither"}],
+    choices: [{"value":"fox","label":"Red fox"},{"value":"pm","label":"European pine marten"},{"value":"neither","label":"Neither"}],
   },
   {
     id: "other_interactions",
@@ -150,7 +167,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_local"] === 'pm' || answers["sp_local"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_local"], "pm"),
   },
   {
     id: "sp_property_exp_pm",
@@ -159,7 +176,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_property"] === 'pm' || answers["sp_property"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_property"], "pm"),
   },
   {
     id: "sp_denning_exp_pm",
@@ -168,7 +185,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_denning"], "pm"),
   },
   {
     id: "sp_bins_exp_pm",
@@ -177,7 +194,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_bins"], "pm"),
   },
   {
     id: "sp_damage_exp_pm",
@@ -186,7 +203,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_damage"], "pm"),
   },
   {
     id: "sp_losses_exp_pm",
@@ -195,7 +212,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_losses"], "pm"),
   },
   {
     id: "sp_local_exp_fox",
@@ -204,7 +221,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_local"] === 'fox' || answers["sp_local"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_local"], "fox"),
   },
   {
     id: "sp_property_exp_fox",
@@ -213,7 +230,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_property"] === 'fox' || answers["sp_property"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_property"], "fox"),
   },
   {
     id: "sp_denning_exp_fox",
@@ -222,7 +239,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_denning"], "fox"),
   },
   {
     id: "sp_bins_exp_fox",
@@ -231,7 +248,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_bins"], "fox"),
   },
   {
     id: "sp_damage_exp_fox",
@@ -240,7 +257,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_damage"], "fox"),
   },
   {
     id: "sp_losses_exp_fox",
@@ -249,7 +266,7 @@ export const questions: Question[] = [
     required: true,
     choices: [{"value":"comp_neg","label":"Completely negative"},{"value":"som_neg","label":"Somewhat negative"},{"value":"neutral","label":"Neutral"},{"value":"som_pos","label":"Somewhat positive"},{"value":"comp_pos","label":"Completely positive"}],
     layout: "vertical",
-    visibleIf: (answers: Answers) => (answers["sp_local"] === 'pm' || answers["sp_local"] === 'fox' || answers["sp_local"] === 'both' || answers["sp_property"] === 'pm' || answers["sp_property"] === 'fox' || answers["sp_property"] === 'both' || answers["sp_denning"] === 'pm' || answers["sp_denning"] === 'fox' || answers["sp_denning"] === 'both' || answers["sp_bins"] === 'pm' || answers["sp_bins"] === 'fox' || answers["sp_bins"] === 'both' || answers["sp_damage"] === 'pm' || answers["sp_damage"] === 'fox' || answers["sp_damage"] === 'both' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both') && (answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'both'),
+    visibleIf: (answers: Answers) => hasAnyInteraction(answers) && hasSpecies(answers["sp_losses"], "fox"),
   },
   {
     id: "season",
@@ -258,7 +275,7 @@ export const questions: Question[] = [
     hint: "[object Object]",
     required: false,
     choices: [{"value":"spring","label":"Spring (March–May)"},{"value":"summer","label":"Summer (June–August)"},{"value":"autumn","label":"Autumn (September–November)"},{"value":"winter","label":"Winter (December–February)"},{"value":"unsure","label":"Not sure"}],
-    visibleIf: (answers: Answers) => answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'both',
+    visibleIf: (answers: Answers) => hasSpecies(answers["sp_losses"], "pm") || hasSpecies(answers["sp_losses"], "fox"),
   },
   {
     id: "loss_details",
@@ -266,7 +283,7 @@ export const questions: Question[] = [
     prompt: "Where you have suffered animal losses, please provide details where you feel comfortable, including the type of animals lost and the number for each occasion, where possible.",
     required: false,
     multiline: true,
-    visibleIf: (answers: Answers) => answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'both',
+    visibleIf: (answers: Answers) => hasSpecies(answers["sp_losses"], "pm") || hasSpecies(answers["sp_losses"], "fox"),
   },
   {
     id: "signs_losses",
@@ -275,7 +292,7 @@ export const questions: Question[] = [
     hint: "(Please describe anything that helped you identify the animal. For example: tracks, droppings, bite marks, or seeing the animal)",
     required: false,
     multiline: true,
-    visibleIf: (answers: Answers) => answers["sp_losses"] === 'fox' || answers["sp_losses"] === 'pm' || answers["sp_losses"] === 'both',
+    visibleIf: (answers: Answers) => hasSpecies(answers["sp_losses"], "pm") || hasSpecies(answers["sp_losses"], "fox"),
   },
   {
     id: "other_sp_interactions",

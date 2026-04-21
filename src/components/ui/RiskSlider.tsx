@@ -9,6 +9,12 @@ export interface RiskSliderProps {
   itemLabel?: string;
   ariaLabel?: string;
   showHeaderLabels?: boolean;
+  /** Show the 0-100 numeric percentage in the readout. Defaults to true. */
+  showPercent?: boolean;
+  /** Initial visual position when value is null (e.g. 50 for a neutral-centered
+   *  bipolar scale). The slider still reads as "not answered" until the user
+   *  interacts, so required validation still applies. */
+  defaultValue?: number;
 }
 
 /**
@@ -55,10 +61,16 @@ export function RiskSlider({
   itemLabel,
   ariaLabel,
   showHeaderLabels = false,
+  showPercent = true,
+  defaultValue,
 }: RiskSliderProps) {
   const inputId = useId();
   const touched = value !== null;
-  const displayValue = touched ? value : 0;
+  const displayValue = touched
+    ? value
+    : typeof defaultValue === "number"
+      ? defaultValue
+      : 0;
 
   const boundaries = useMemo(() => boundaryPositions(anchors), [anchors]);
   const currentAnchor = useMemo(
@@ -82,7 +94,7 @@ export function RiskSlider({
   const fillPercent = displayValue;
   const cssVars: React.CSSProperties & Record<string, string | number> = {
     "--fill": `${fillPercent}%`,
-    "--fill-color": touched ? "#446440" : "transparent",
+    "--fill-color": touched ? "#446440" : "#e5e1d8",
     "--thumb-color": touched ? "#446440" : "#cfc9bb",
   };
 
@@ -108,7 +120,9 @@ export function RiskSlider({
           aria-valuetext={
             touched
               ? currentAnchor
-                ? `${currentAnchor} (${displayValue} out of 100)`
+                ? showPercent
+                  ? `${currentAnchor} (${displayValue} out of 100)`
+                  : currentAnchor
                 : `${displayValue} out of 100, between ${leftLabel} and ${rightLabel}`
               : `Not answered. Move slider to respond, between ${leftLabel} and ${rightLabel}.`
           }
@@ -139,12 +153,17 @@ export function RiskSlider({
       >
         {touched ? (
           currentAnchor ? (
-            <>
-              Your answer: <span className="font-semibold">{currentAnchor}</span>
-            </>
+            showPercent ? (
+              <>
+                <span className="font-semibold">{displayValue}% </span>
+                <span className="font-semibold">({currentAnchor})</span>
+              </>
+            ) : (
+              <span className="font-semibold">{currentAnchor}</span>
+            )
           ) : (
             <>
-              Your answer: <span className="font-semibold">{displayValue}</span>
+              <span className="font-semibold">{displayValue}</span>
               <span className="ml-1 font-normal text-stone-500">/ 100</span>
             </>
           )

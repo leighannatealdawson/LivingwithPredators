@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { LabelText } from "./LabelText";
 
 interface Choice {
   value: string;
@@ -51,7 +52,9 @@ export function RadioGroup({
               onChange={() => onChange(choice.value)}
               className="sr-only"
             />
-            <span>{choice.label}</span>
+            <span>
+              <LabelText text={choice.label} />
+            </span>
           </label>
         );
       })}

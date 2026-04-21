@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { RiskSlider } from "./RiskSlider";
+import { LabelText } from "./LabelText";
 
 export interface RiskSliderGroupProps {
   prompt: string;
@@ -9,6 +10,8 @@ export interface RiskSliderGroupProps {
   items: Array<{ id: string; label: string }>;
   values: Record<string, number | null>;
   onChange: (itemId: string, value: number) => void;
+  showPercent?: boolean;
+  defaultValue?: number;
 }
 
 /**
@@ -24,6 +27,8 @@ export function RiskSliderGroup({
   items,
   values,
   onChange,
+  showPercent,
+  defaultValue,
 }: RiskSliderGroupProps) {
   const [showAnchors, setShowAnchors] = useState(false);
   const hasAnchors = !!(anchors && anchors.length > 2);
@@ -32,7 +37,7 @@ export function RiskSliderGroup({
     <div className="space-y-4">
       <div>
         <h3 className="!font-sans !text-base font-semibold !text-stone-900 leading-snug">
-          {prompt}
+          <LabelText text={prompt} />
           <span aria-hidden="true" className="ml-1 text-forest-700">
             *
           </span>
@@ -59,7 +64,7 @@ export function RiskSliderGroup({
         {items.map((item) => (
           <li key={item.id} className="py-5 md:p-5">
             <div className="mb-3 text-sm font-semibold text-stone-900 leading-snug">
-              {item.label}
+              <LabelText text={item.label} />
             </div>
             <RiskSlider
               ariaLabel={`${item.label} — from ${leftLabel} to ${rightLabel}`}
@@ -70,6 +75,8 @@ export function RiskSliderGroup({
               anchors={anchors}
               itemLabel={item.label}
               showHeaderLabels
+              showPercent={showPercent}
+              defaultValue={defaultValue}
             />
           </li>
         ))}

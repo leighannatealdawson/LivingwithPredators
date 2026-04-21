@@ -47,6 +47,13 @@ export interface ChoiceMatrixQuestion extends QuestionBase {
   kind: "choice-matrix";
   items: Array<{ id: string; label: string }>;
   choices: Choice[];
+  /** When true, each row stores a string[] of selected values and renders as
+   *  checkboxes rather than radios. */
+  multi?: boolean;
+  /** Only meaningful with multi=true. The value listed here is mutually
+   *  exclusive: selecting it clears the rest of the row, and selecting any
+   *  other option removes this one. Typical use: "neither". */
+  exclusive?: string;
 }
 
 export interface TextQuestion extends QuestionBase {

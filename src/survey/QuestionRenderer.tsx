@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { AnswerValue, Question } from "./schema-types";
 import { FieldLabel, HelperText } from "../components/ui/FieldLabel";
+import { LabelText } from "../components/ui/LabelText";
 import { RadioGroup } from "../components/ui/RadioGroup";
 import { CheckboxGroup } from "../components/ui/CheckboxGroup";
 import { TextInput } from "../components/ui/TextInput";
@@ -27,7 +28,9 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
     case "note":
       return (
         <section aria-labelledby={labelId} className="rounded-xl bg-stone-100 p-4 text-sm text-stone-700">
-          <p id={labelId}>{q.prompt}</p>
+          <p id={labelId}>
+            <LabelText text={q.prompt} />
+          </p>
         </section>
       );
 
@@ -35,7 +38,7 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
       return (
         <section aria-labelledby={labelId} className="space-y-3">
           <FieldLabel id={labelId} required={q.required}>
-            {q.prompt}
+            <LabelText text={q.prompt} />
           </FieldLabel>
           {q.hint && <HelperText>{q.hint}</HelperText>}
           <RadioGroup
@@ -53,7 +56,7 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
       return (
         <section aria-labelledby={labelId} className="space-y-3">
           <FieldLabel id={labelId} required={q.required}>
-            {q.prompt}
+            <LabelText text={q.prompt} />
           </FieldLabel>
           {q.hint && <HelperText>{q.hint}</HelperText>}
           <CheckboxGroup
@@ -70,7 +73,7 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
       return (
         <section aria-labelledby={labelId} className="space-y-3">
           <FieldLabel id={labelId} required={q.required}>
-            {q.prompt}
+            <LabelText text={q.prompt} />
           </FieldLabel>
           {q.hint && <HelperText>{q.hint}</HelperText>}
           <RiskSlider
@@ -106,6 +109,8 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
             items={q.items}
             values={values}
             onChange={(itemId, v) => onAnswer(itemId, v)}
+            showPercent={false}
+            defaultValue={50}
           />
         </section>
       );
@@ -113,10 +118,14 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
 
     case "choice-matrix": {
       // Choice-matrix item answers also live as flat top-level keys.
-      const values: Record<string, string | null> = {};
+      const values: Record<string, string | string[] | null> = {};
       for (const item of q.items) {
         const v = answers[item.id];
-        values[item.id] = typeof v === "string" ? v : null;
+        if (q.multi) {
+          values[item.id] = Array.isArray(v) ? (v as string[]) : null;
+        } else {
+          values[item.id] = typeof v === "string" ? v : null;
+        }
       }
       return (
         <section aria-labelledby={labelId} className="space-y-4">
@@ -128,6 +137,8 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
             hint={q.hint}
             items={q.items}
             choices={q.choices}
+            multi={q.multi}
+            exclusive={q.exclusive}
             values={values}
             onChange={(itemId, v) => onAnswer(itemId, v)}
           />
@@ -143,7 +154,7 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
       return (
         <section aria-labelledby={labelId} className="space-y-3">
           <FieldLabel id={labelId} required={q.required}>
-            {q.prompt}
+            <LabelText text={q.prompt} />
           </FieldLabel>
           {q.hint && <HelperText>{q.hint}</HelperText>}
           {q.multiline ? (
@@ -162,7 +173,7 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
               aria-labelledby={labelId}
             />
           )}
-          <HelperText>{FREE_TEXT_NOTICE}</HelperText>
+
         </section>
       );
     }

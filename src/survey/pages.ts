@@ -86,42 +86,42 @@ export const wizardPages: WizardPage[] = [
   },
   {
     id: "intro",
-    title: "Part 1 — About the animals",
+    title: "About the animals",
     intro:
       "We would like to start by asking a few questions about your familiarity with the animals we are studying.",
     questions: introQuestions,
   },
   {
     id: "acceptability",
-    title: "Part 2a — Acceptability",
+    title: "Acceptability",
     intro:
-      "The following are hypothetical situations. For each, please indicate where you sit on the scale from completely unacceptable to completely acceptable.",
+      "",
     questions: acceptabilityQuestions,
   },
   {
     id: "risk",
-    title: "Part 2b — Perceived risk",
+    title: "Perceived risk",
     intro:
-      "Please indicate how much risk you believe each animal poses in the contexts listed below.",
+      "",
     questions: riskQuestions,
   },
   {
     id: "tolerance",
-    title: "Part 2c — Tolerance and management",
+    title: "Tolerance and management",
     intro:
-      "Please indicate the extent to which you agree or disagree with each statement.",
+      "",
     questions: toleranceQuestions,
   },
   {
     id: "interactions",
-    title: "Part 3 — Your experiences",
+    title: "Your experiences",
     intro:
-      "Have you had any direct experience with these animals? Questions below will adapt based on your answers.",
+      "",
     questions: interactionsQuestions,
   },
   {
     id: "demographics",
-    title: "Part 4 — A little about you",
+    title: "A little about you",
     intro:
       "These final questions help us understand how views vary. All answers remain anonymous.",
     questions: demographicsQuestions,

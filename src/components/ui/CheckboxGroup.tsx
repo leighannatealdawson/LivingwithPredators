@@ -1,3 +1,5 @@
+import { LabelText } from "./LabelText";
+
 interface Choice {
   value: string;
   label: string;
@@ -40,7 +42,9 @@ export function CheckboxGroup({
               onChange={() => toggle(choice.value)}
               className="h-5 w-5 flex-shrink-0 rounded border-stone-400 text-forest-700 focus:ring-forest-600"
             />
-            <span>{choice.label}</span>
+            <span>
+              <LabelText text={choice.label} />
+            </span>
           </label>
         );
       })}

@@ -12,6 +12,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import ExcelJS from "exceljs";
+import { questionPatches, helpersBlock } from "./schema-overrides";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, "..");
@@ -178,6 +179,8 @@ type Question =
       kind: "choice-matrix";
       items: Array<{ id: string; label: string }>;
       choices: Array<{ value: string; label: string }>;
+      multi?: boolean;
+      exclusive?: string;
     })
   | (BaseQ & { kind: "text"; multiline: boolean; validate?: "postcode-ie-ni" })
   | (BaseQ & { kind: "note" });
@@ -555,8 +558,40 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
   if (likertBuffer) flushLikert();
   if (matrixBuffer) flushMatrix();
 
+  applyOverrides(questions);
+
   const orderedIds = questions.map((q) => q.id);
   return { questions, orderedIds, sheetOrderedIds };
+}
+
+/**
+ * Apply hand-written patches from schema-overrides.ts. Patches either replace
+ * scalar fields (prompt, anchors, etc.) or override the translated visibleIf
+ * body with a custom expression.
+ */
+function applyOverrides(questions: Question[]): void {
+  for (const q of questions) {
+    const patch = questionPatches[q.id];
+    if (!patch) continue;
+    if (patch.prompt !== undefined) q.prompt = patch.prompt;
+    if (patch.hint !== undefined) q.hint = patch.hint;
+    if (patch.visibleIfBody !== undefined) {
+      q.visibleIfBody = patch.visibleIfBody;
+      q.visibleIfExpr = q.visibleIfExpr ?? "<override>";
+    }
+    if (q.kind === "slider" || q.kind === "slider-group") {
+      if (patch.leftLabel !== undefined) q.leftLabel = patch.leftLabel;
+      if (patch.rightLabel !== undefined) q.rightLabel = patch.rightLabel;
+      if (patch.anchors !== undefined) q.anchors = patch.anchors;
+    }
+    if (q.kind === "choice-matrix" || q.kind === "single" || q.kind === "multi") {
+      if (patch.choices !== undefined) q.choices = patch.choices;
+    }
+    if (q.kind === "choice-matrix") {
+      if (patch.multi !== undefined) q.multi = patch.multi;
+      if (patch.exclusive !== undefined) q.exclusive = patch.exclusive;
+    }
+  }
 }
 
 function emit(parsed: ParsedForm): string {
@@ -564,12 +599,16 @@ function emit(parsed: ParsedForm): string {
     "// ============================================================",
     "// GENERATED FROM docs/form.xlsx — DO NOT EDIT BY HAND.",
     "// Run `npm run generate:schema` to regenerate.",
+    "// Overrides (prompt tweaks, multi-select matrix, helper-based",
+    "// predicates, etc.) live in scripts/schema-overrides.ts — edit",
+    "// that file, not this one.",
     "// ============================================================",
     "",
     'import type { Question } from "./schema-types";',
     "",
     "type Answers = Record<string, unknown>;",
     "",
+    helpersBlock,
   ].join("\n");
 
   const questionLiterals = parsed.questions
@@ -602,6 +641,9 @@ function emit(parsed: ParsedForm): string {
           base.push(`    items: ${JSON.stringify(q.items)}`);
           break;
         case "choice-matrix":
+          if (q.multi) base.push(`    multi: ${JSON.stringify(q.multi)}`);
+          if (q.exclusive !== undefined)
+            base.push(`    exclusive: ${JSON.stringify(q.exclusive)}`);
           base.push(`    items: ${JSON.stringify(q.items)}`);
           base.push(`    choices: ${JSON.stringify(q.choices)}`);
           break;
