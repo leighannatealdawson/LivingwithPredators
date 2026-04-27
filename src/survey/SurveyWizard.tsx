@@ -102,7 +102,10 @@ export function SurveyWizard() {
         ) : isSpecies ? (
           <FocalSpeciesPage onNext={wiz.advance} />
         ) : isThanks ? (
-          <ThankYouPage submissionId={wiz.state.submissionId} />
+          <ThankYouPage
+            submissionId={wiz.state.submissionId}
+            onRestart={wiz.reset}
+          />
         ) : (
           <div className="space-y-8">
             {page.intro && (
