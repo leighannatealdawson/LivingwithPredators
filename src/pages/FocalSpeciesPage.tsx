@@ -1,5 +1,7 @@
 import { Button } from "../components/ui/Button";
 
+const base = import.meta.env.BASE_URL ?? "/";
+
 export function FocalSpeciesPage({ onNext }: { onNext: () => void }) {
   return (
     <article className="space-y-8 text-center">
@@ -17,7 +19,7 @@ export function FocalSpeciesPage({ onNext }: { onNext: () => void }) {
         {/* Pine Marten */}
         <div className="space-y-3">
           <img
-            src="/species/pm.jpg"
+            src={`${base}species/pm.jpg`}
             alt="European Pine Marten"
             className="mx-auto rounded-2xl shadow-md max-h-64 object-cover"
           />
@@ -29,7 +31,7 @@ export function FocalSpeciesPage({ onNext }: { onNext: () => void }) {
         {/* Red Fox */}
         <div className="space-y-3">
           <img
-            src="/species/fox.jpg"
+            src={`${base}species/fox.jpg`}
             alt="Red Fox"
             className="mx-auto rounded-2xl shadow-md max-h-64 object-cover"
           />
