@@ -85,7 +85,6 @@ export function SurveyWizard() {
         <ProgressBar
           current={wiz.currentIndex}
           total={wiz.totalSteps}
-          label={page.title}
         />
       )}
 
@@ -106,19 +105,11 @@ export function SurveyWizard() {
           <ThankYouPage submissionId={wiz.state.submissionId} />
         ) : (
           <div className="space-y-8">
-
-            {/* HEADER */}
-            <header className="space-y-2">
-              <h1 className="!font-serif !text-2xl md:!text-3xl">
-                {page.title}
-              </h1>
-
-              {page.intro && (
-                <p className="max-w-prose text-stone-700">
-                  {page.intro}
-                </p>
-              )}
-            </header>
+            {page.intro && (
+              <p className="max-w-prose text-stone-700">
+                {page.intro}
+              </p>
+            )}
 
             {/* QUESTIONS */}
             <PageRenderer

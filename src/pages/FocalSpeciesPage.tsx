@@ -6,7 +6,7 @@ export function FocalSpeciesPage({ onNext }: { onNext: () => void }) {
   return (
     <article className="space-y-8 text-center">
       <p className="mx-auto max-w-prose text-base text-stone-700">
-        The following questions in this survey relate to two species found on the island of Ireland: the European pine marten and the red fox.
+        The following questions in this survey relate to two species found on the island of Ireland.
       </p>
 
       <div className="grid gap-8 md:grid-cols-2 items-start">
