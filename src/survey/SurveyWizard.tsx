@@ -173,7 +173,7 @@ export function SurveyWizard() {
 
       {!isThanks && (
         <footer className="text-center text-xs text-stone-500">
-          Ulster University · School of Geography and Environmental Sciences · Research survey
+          Ulster University | School of Geography and Environmental Sciences | Leighanna Teal Dawson
         </footer>
       )}
     </main>
