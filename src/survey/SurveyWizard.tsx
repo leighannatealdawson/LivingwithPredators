@@ -101,7 +101,7 @@ export function SurveyWizard() {
             onStart={wiz.advance}
           />
         ) : isSpecies ? (
-          <FocalSpeciesPage />
+          <FocalSpeciesPage onNext={wiz.advance} />
         ) : isThanks ? (
           <ThankYouPage submissionId={wiz.state.submissionId} />
         ) : (
