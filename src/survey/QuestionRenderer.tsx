@@ -241,7 +241,7 @@ function PostcodeField({
         autoCapitalize="characters"
         autoCorrect="off"
         spellCheck={false}
-        placeholder="e.g. BT12 5AB or D02 X285"
+        placeholder="e.g. BT12 5AB, D02 X285, or up to 7 letters/numbers"
       />
       {errorMessage && <HelperText tone="error">{errorMessage}</HelperText>}
       {result && result.ok && (
@@ -252,7 +252,9 @@ function PostcodeField({
               ? "Northern Ireland outward code"
               : result.kind === "eircode"
                 ? "Irish Eircode"
-                : "Irish Eircode routing key"}{" "}
+                : result.kind === "eircode-partial"
+                  ? "Irish Eircode routing key"
+                  : "Postcode accepted"}{" "}
           — thanks.
         </HelperText>
       )}
