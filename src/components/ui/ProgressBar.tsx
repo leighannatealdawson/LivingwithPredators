@@ -13,7 +13,7 @@ export function ProgressBar({ current, total, label }: ProgressBarProps) {
         className="flex items-center justify-between text-xs uppercase tracking-wider text-stone-500"
         aria-hidden="true"
       >
-        <span>{label ?? `Step ${current + 1} of ${total}`}</span>
+        <span>{label ?? `Page ${current + 1} of ${total}`}</span>
         <span>{clamped}%</span>
       </div>
       <div
