@@ -247,15 +247,14 @@ function PostcodeField({
       {result && result.ok && (
         <HelperText>
           {result.kind === "ni"
-            ? "Northern Ireland postcode"
+            ? "Northern Ireland postcode entered successfully."
             : result.kind === "ni-partial"
-              ? "Northern Ireland outward code"
+              ? "Thank you for entering a Northern Ireland outward code."
               : result.kind === "eircode"
-                ? "Irish Eircode"
+                ? "Irish Eircode entered successfully."
                 : result.kind === "eircode-partial"
-                  ? "Irish Eircode routing key"
-                  : "Postcode accepted"}{" "}
-          — thanks.
+                  ? "Thank you for entering a partial Eircode."
+                  : "Postcode accepted."}
         </HelperText>
       )}
     </section>
