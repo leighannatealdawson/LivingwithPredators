@@ -241,20 +241,20 @@ function PostcodeField({
         autoCapitalize="characters"
         autoCorrect="off"
         spellCheck={false}
-        placeholder="e.g. BT12 5AB, D02 X285, or up to 7 letters/numbers"
+        placeholder="e.g. BT12 5AB or D02 X285"
       />
       {errorMessage && <HelperText tone="error">{errorMessage}</HelperText>}
       {result && result.ok && (
         <HelperText>
           {result.kind === "ni"
-            ? "Thank you for entering a Northern Ireland postcode."
+            ? "Thank you for entering your postcode."
             : result.kind === "ni-partial"
-              ? "Thank you for entering a Northern Ireland outward code."
+              ? "Thank you for entering your partial postcode."
               : result.kind === "eircode"
-                ? "Thank you for entering an Eircode."
+                ? "Thank you for entering your Eircode."
                 : result.kind === "eircode-partial"
-                  ? "Thank you for entering part of an Eircode."
-                  : "Thank you for entering a postcode."}
+                  ? "Thank you for entering your partial postcode."
+                  : "Thank you for entering your postcode."}
         </HelperText>
       )}
     </section>
