@@ -1,4 +1,4 @@
-export function SpeciesPage() {
+export function FocalSpeciesPage() {
   return (
     <article className="space-y-8 text-center">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-forest-100">
