@@ -33,7 +33,7 @@ export function SpeciesPage() {
           />
           <p className="font-semibold">Red Fox</p>
           <p className="text-sm text-stone-600 italic">Vulpes vulpes</p>
-          <p className="text-sm text-stone-600">Irish Sionnach</p>
+          <p className="text-sm text-stone-600">Irish Sionnach Rua</p>
         </div>
       </div>
 

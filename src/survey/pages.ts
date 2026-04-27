@@ -6,12 +6,15 @@
  * XLSForm without updating this file will leave the new question
  * unassigned to any page — the dev-mode check in development.ts flags that.
  */
+
+
 import { questions, questionsById } from "./schema.generated";
 import type { Question } from "./schema-types";
 
 export type StepId =
   | "welcome"
   | "intro"
+  | "species" 
   | "acceptability"
   | "risk"
   | "tolerance"
@@ -24,7 +27,6 @@ export interface WizardPage {
   title: string;
   intro?: string;
   questions: Question[];
-  /** Optional image to render at the top of the page (e.g. species photo). */
   imagesBefore?: { src: string; alt: string; caption?: string }[];
 }
 
@@ -44,18 +46,16 @@ const introQuestions: Question[] = [
   q("seen_pm_matrix"),
 ];
 
-// Acceptability page: hypothetical scenarios for pine marten and fox
+// Acceptability page
 const acceptabilityQuestions: Question[] = [q("pm_scenarios"), q("fox_scenarios")];
 
 // Risk page
 const riskQuestions: Question[] = [q("pm_risk"), q("fox_risk")];
 
-// Tolerance / management page
+// Tolerance page
 const toleranceQuestions: Question[] = [q("pm_tolerance"), q("fox_tolerance")];
 
-// Interactions page: gating matrix (sentiment sliders render inline
-// underneath each matrix row via `followUps`) + season and loss-details
-// follow-ups when losses were reported.
+// Interactions page
 const interactionsQuestions: Question[] = [
   q("sp_local_matrix"),
   q("other_interactions"),
@@ -89,32 +89,36 @@ export const wizardPages: WizardPage[] = [
       "We would like to start by asking a few questions about your familiarity with the animals we are studying.",
     questions: introQuestions,
   },
+
+  {
+    id: "species",
+    title: "Species information",
+    intro: "",
+    questions: [],
+  },
+
   {
     id: "acceptability",
     title: "Acceptability",
-    intro:
-      "",
+    intro: "",
     questions: acceptabilityQuestions,
   },
   {
     id: "risk",
     title: "Perceived risk",
-    intro:
-      "",
+    intro: "",
     questions: riskQuestions,
   },
   {
     id: "tolerance",
     title: "Tolerance and management",
-    intro:
-      "",
+    intro: "",
     questions: toleranceQuestions,
   },
   {
     id: "interactions",
     title: "Your experiences",
-    intro:
-      "",
+    intro: "",
     questions: interactionsQuestions,
   },
   {
@@ -131,8 +135,7 @@ export const wizardPages: WizardPage[] = [
   },
 ];
 
-/** The canonical id lookup for any question belonging to any page. Includes
- *  the ids of any questions rendered inline via a choice-matrix's followUps. */
+/** The canonical id lookup for any question belonging to any page. */
 export const allPageQuestionIds: Set<string> = new Set(
   wizardPages.flatMap((p) =>
     p.questions.flatMap((question) => {
@@ -153,7 +156,7 @@ export const allPageQuestionIds: Set<string> = new Set(
   ),
 );
 
-/** Development check: warn about any schema question not placed on a page. */
+/** Development check */
 export function findUnassignedQuestionIds(): string[] {
   const out: string[] = [];
   for (const qu of questions) {
