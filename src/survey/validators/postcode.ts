@@ -65,6 +65,20 @@ export function validateIrishOrNIPostcode(raw: string): PostcodeResult {
   return { ok: true, normalised: noSpace, kind: "postcode" };
 }
 
+export function validateNIFullPostcode(raw: string): PostcodeResult {
+  if (!raw || !raw.trim()) return { ok: false, reason: "empty" };
+  const s = raw.toUpperCase().replace(/\s+/g, " ").trim();
+  if (!NI_REGEX.test(s)) return { ok: false, reason: "unrecognised" };
+  return { ok: true, normalised: s, kind: "ni" };
+}
+
+export function validateEircodeRoutingKey(raw: string): PostcodeResult {
+  if (!raw || !raw.trim()) return { ok: false, reason: "empty" };
+  const s = raw.toUpperCase().replace(/\s+/g, "").trim();
+  if (!EIRCODE_PARTIAL_REGEX.test(s)) return { ok: false, reason: "unrecognised" };
+  return { ok: true, normalised: s, kind: "eircode-partial" };
+}
+
 export type PostcodeReason = "empty" | "unrecognised";
 
 export function postcodeErrorMessage(reason: PostcodeReason): string {

@@ -68,7 +68,9 @@ const interactionsQuestions: Question[] = [
 const demographicsQuestions: Question[] = [
   q("age"),
   q("gender"),
+  q("country"),
   q("postcode"),
+  q("eircode"),
   q("job"),
   q("hobbies"),
   q("comments"),

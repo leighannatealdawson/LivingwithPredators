@@ -173,7 +173,7 @@ The generator collapses runs of `likert_*` Likert questions inside a `table-list
       Intro          species_f, confidence_f, species_pm, confidence_pm,
                      seen_pm, seen_fox
          ▼
-   Acceptability     pm_a..e + fox_a..e     (10 sliders, 1-5 → 0-100)
+   Acceptability     pm_scenarios + fox_scenarios     (5 items each: pm_woodland, pm_residential, pm_farm, pm_den, pm_poultry_gamebirds; 1-5 → 0-100)
          ▼
    Risk              pm_pet..humans + fox_pet..humans   (10 sliders)
          ▼
@@ -497,7 +497,7 @@ The experience follow-up group is visible only when any `sp_<context>` equals `p
 **Approach:**
 - Each page component is thin: renders a title, optional intro paragraph, delegates the question list to `<PageRenderer />`.
 - **Intro:** `species_f`, then `confidence_f`; `species_pm`, then `confidence_pm`; two `seen_*` yes/no/unsure questions. Renders the two species photos inline with the identification questions.
-- **Acceptability:** `pm_scenarios` slider-group (`pm_a` → `pm_e`), then `fox_scenarios` slider-group. A short intro paragraph explains the scale (left = completely unacceptable, right = completely acceptable).
+- **Acceptability:** `pm_scenarios` slider-group (`pm_woodland`, `pm_residential`, `pm_farm`, `pm_den`, `pm_poultry_gamebirds`), then `fox_scenarios` slider-group (`fox_woodland`, `fox_residential`, `fox_farm`, `fox_den`, `fox_poultry_gamebirds`). A short intro paragraph explains the scale (left = completely unacceptable, right = completely acceptable).
 - **Risk:** `pm_risk` slider-group, then `fox_risk` slider-group. Intro explains the scale (left = very low risk, right = very high risk).
 - **Tolerance:** `pm_tolerance`, then `fox_tolerance` slider-groups. Intro explains the scale (left = strongly disagree, right = strongly agree).
 - **Interactions:** the `interactions_group` (6 `sp_*` fox/pm/both/neither rows) + the always-visible `other_interactions` text. Then the experience group and loss/season/details, all gated by their `visibleIf` predicates from the generator. Final always-visible `other_sp_interactions`.

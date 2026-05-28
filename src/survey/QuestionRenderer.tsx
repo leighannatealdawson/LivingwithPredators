@@ -10,7 +10,12 @@ import { TextArea } from "../components/ui/TextArea";
 import { RiskSlider } from "../components/ui/RiskSlider";
 import { RiskSliderGroup } from "../components/ui/RiskSliderGroup";
 import { ChoiceMatrix } from "../components/ui/ChoiceMatrix";
-import { validateIrishOrNIPostcode, postcodeErrorMessage } from "./validators/postcode";
+import {
+  validateIrishOrNIPostcode,
+  validateNIFullPostcode,
+  validateEircodeRoutingKey,
+  postcodeErrorMessage,
+} from "./validators/postcode";
 
 const FREE_TEXT_NOTICE =
   "Please do not include identifying information (names, phone numbers, addresses) in your answer.";
@@ -175,7 +180,11 @@ export function QuestionRenderer({ question: q, answers, onAnswer }: Props) {
     }
 
     case "text": {
-      if (q.validate === "postcode-ie-ni") {
+      if (
+        q.validate === "postcode-ie-ni" ||
+        q.validate === "ni-full-postcode" ||
+        q.validate === "eircode-routing-key"
+      ) {
         return <PostcodeField question={q} value={value} onChange={(v) => onAnswer(q.id, v)} labelId={labelId} />;
       }
       const textValue = typeof value === "string" ? value : "";
@@ -221,7 +230,19 @@ function PostcodeField({
 }) {
   const [touched, setTouched] = useState(false);
   const raw = typeof value === "string" ? value : "";
-  const result = useMemo(() => (raw ? validateIrishOrNIPostcode(raw) : null), [raw]);
+  const result = useMemo(() => {
+    if (!raw) return null;
+    switch (q.validate) {
+      case "postcode-ie-ni":
+        return validateIrishOrNIPostcode(raw);
+      case "ni-full-postcode":
+        return validateNIFullPostcode(raw);
+      case "eircode-routing-key":
+        return validateEircodeRoutingKey(raw);
+      default:
+        return null;
+    }
+  }, [raw, q.validate]);
   const errorMessage =
     touched && result && !result.ok ? postcodeErrorMessage(result.reason) : null;
 
@@ -231,6 +252,20 @@ function PostcodeField({
         {q.prompt}
       </FieldLabel>
       {q.hint && <HelperText>{q.hint}</HelperText>}
+      {q.validate === "eircode-routing-key" && (
+        <HelperText>
+          If you don’t know your Eircode, you can look it up using the{' '}
+          <a
+            href="https://finder.eircode.ie/#/"
+            target="_blank"
+            rel="noreferrer"
+            className="underline text-sky-700 hover:text-sky-900"
+          >
+            Eircode Finder
+          </a>
+          .
+        </HelperText>
+      )}
       <TextInput
         id={q.id}
         value={raw}
@@ -241,7 +276,13 @@ function PostcodeField({
         autoCapitalize="characters"
         autoCorrect="off"
         spellCheck={false}
-        placeholder="e.g. BT12 5AB or D02 X285"
+        placeholder={
+          q.validate === "eircode-routing-key"
+            ? "e.g. D02"
+            : q.validate === "ni-full-postcode"
+            ? "e.g. BT12 5AB"
+            : "e.g. BT12 5AB or D02 X285"
+        }
       />
       {errorMessage && <HelperText tone="error">{errorMessage}</HelperText>}
       {result && result.ok && (
@@ -249,12 +290,14 @@ function PostcodeField({
           {result.kind === "ni"
             ? "Thank you for entering your postcode."
             : result.kind === "ni-partial"
-              ? "Thank you for entering your partial postcode."
-              : result.kind === "eircode"
-                ? "Thank you for entering your Eircode."
-                : result.kind === "eircode-partial"
-                  ? "Thank you for entering your partial postcode."
-                  : "Thank you for entering your postcode."}
+            ? "Thank you for entering your partial postcode."
+            : result.kind === "eircode"
+            ? "Thank you for entering your Eircode."
+            : result.kind === "eircode-partial"
+            ? q.validate === "eircode-routing-key"
+              ? "Thank you for entering the first 4 characters of your Eircode."
+              : "Thank you for entering your partial postcode."
+            : "Thank you for entering your postcode."}
         </HelperText>
       )}
     </section>

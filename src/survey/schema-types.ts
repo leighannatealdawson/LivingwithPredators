@@ -69,7 +69,7 @@ export interface ChoiceMatrixQuestion extends QuestionBase {
 export interface TextQuestion extends QuestionBase {
   kind: "text";
   multiline: boolean;
-  validate?: "postcode-ie-ni";
+  validate?: "postcode-ie-ni" | "ni-full-postcode" | "eircode-routing-key";
 }
 
 export interface NoteQuestion extends QuestionBase {

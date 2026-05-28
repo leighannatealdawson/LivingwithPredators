@@ -2,7 +2,11 @@ import type { AnswerValue } from "./schema-types";
 import type { StepId } from "./pages";
 import { wizardPages } from "./pages";
 import { questionsById } from "./schema.generated";
-import { validateIrishOrNIPostcode } from "./validators/postcode";
+import {
+  validateIrishOrNIPostcode,
+  validateNIFullPostcode,
+  validateEircodeRoutingKey,
+} from "./validators/postcode";
 
 export const STORAGE_KEY = "wildlife-survey:v1";
 export const SURVEY_VERSION = 1;
@@ -103,9 +107,17 @@ export function canProceedFrom(
 
     const value = answers[q.id];
     if (!isAnswered(value)) return false;
-    if (q.kind === "text" && q.validate === "postcode-ie-ni") {
-      const result = validateIrishOrNIPostcode(String(value ?? ""));
-      if (!result.ok) return false;
+    if (q.kind === "text" && q.validate) {
+      const valueString = String(value ?? "");
+      let result = null;
+      if (q.validate === "postcode-ie-ni") {
+        result = validateIrishOrNIPostcode(valueString);
+      } else if (q.validate === "ni-full-postcode") {
+        result = validateNIFullPostcode(valueString);
+      } else if (q.validate === "eircode-routing-key") {
+        result = validateEircodeRoutingKey(valueString);
+      }
+      if (result && !result.ok) return false;
     }
   }
   return true;
