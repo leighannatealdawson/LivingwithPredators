@@ -37,6 +37,7 @@ jobs:
         env:
           # Apps Script URL (configure as a repo variable or secret).
           VITE_SUBMIT_URL: ${{ vars.VITE_SUBMIT_URL }}
+          VITE_BASE_PATH: "/"
           # GITHUB_REPOSITORY is auto-populated by Actions; vite.config.ts
           # derives the base path from it so the build works regardless of
           # repo name.
