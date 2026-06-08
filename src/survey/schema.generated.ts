@@ -309,7 +309,7 @@ export const questions: Question[] = [
     id: "season",
     kind: "multi",
     prompt: "If you can remember, please tell us what time of the year (s) these experiences happened.",
-    hint: "[object Object]",
+    hint: "If you have had multiple experiences, please try to pick the season(s) when it happened most often. ",
     required: false,
     choices: [{"value":"spring","label":"Spring (March–May)"},{"value":"summer","label":"Summer (June–August)"},{"value":"autumn","label":"Autumn (September–November)"},{"value":"winter","label":"Winter (December–February)"},{"value":"unsure","label":"Not sure"}],
     visibleIf: (answers: Answers) => hasSpecies(answers["sp_losses"], "pm") || hasSpecies(answers["sp_losses"], "fox"),

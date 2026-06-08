@@ -80,6 +80,11 @@ async function parseWorkbook() {
     if (v == null) return "";
     if (typeof v === "string") return v;
     if (typeof v === "number" || typeof v === "boolean") return String(v);
+    if (typeof v === "object" && "richText" in v && Array.isArray((v as { richText: unknown }).richText)) {
+      return (v as { richText: Array<{ text?: unknown }> }).richText
+        .map((segment) => (typeof segment.text === "string" ? segment.text : String(segment.text ?? "")))
+        .join("");
+    }
     if (typeof v === "object" && "text" in v && typeof (v as { text: unknown }).text === "string") {
       return (v as { text: string }).text;
     }
