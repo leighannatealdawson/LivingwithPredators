@@ -260,10 +260,10 @@ function PostcodeField({
         spellCheck={false}
         placeholder={
           q.validate === "eircode-routing-key"
-            ? "e.g. D02 X285"
+            ? "Please enter the first 6 characters of your Eircode (e.g. D02 X285)"
             : q.validate === "ni-full-postcode"
-            ? "e.g. BT12 5AB"
-            : "e.g. BT12 5AB or D02 X285"
+            ? "Please enter your postcode (e.g. BT12 5AB)"
+            : "Please enter your postcode (e.g. BT12 5AB) or Eircode (e.g. D02 X285)"
         }
       />
       {errorMessage && <HelperText tone="error">{errorMessage}</HelperText>}
