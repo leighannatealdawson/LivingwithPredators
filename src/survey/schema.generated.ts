@@ -357,8 +357,7 @@ export const questions: Question[] = [
   {
     id: "country",
     kind: "single",
-    prompt: "country",
-    hint: "Which country do you live in?",
+    prompt: "Which country do you live in?",
     required: false,
     choices: [{"value":"ni","label":"Northern Ireland"},{"value":"roi","label":"Republic of Ireland"}],
     layout: "horizontal",
@@ -366,11 +365,12 @@ export const questions: Question[] = [
   {
     id: "postcode",
     kind: "text",
-    prompt: "postcode",
-    hint: "Please enter your full Northern Ireland postcode (e.g. BT12 5AB).",
+    prompt: "Please enter your full Northern Ireland postcode (e.g. BT12 5AB).",
+    hint: "This helps us understand how views and experiences may vary across different parts of the island of Ireland. As stated at the beginning, your response will remain anonymous.",
     required: false,
     multiline: false,
     validate: "postcode-ie-ni",
+    visibleIf: (answers: Answers) => answers["country"] === 'ni',
   },
   {
     id: "eircode",
@@ -379,22 +379,7 @@ export const questions: Question[] = [
     hint: "Please enter the first 4 characters of your Eircode (e.g. D02).",
     required: false,
     multiline: true,
-  },
-  {
-    id: "job",
-    kind: "single",
-    prompt: "Which of the following best describes the industry you currently work in?",
-    required: false,
-    choices: [{"value":"agri","label":"Agriculture, Forestry & Fishing"},{"value":"manuf","label":"Manufacturing"},{"value":"constr","label":"Construction"},{"value":"retail","label":"Wholesale & Retail Trade"},{"value":"transp","label":"Transportation & Storage"},{"value":"info","label":"Information & Communication"},{"value":"finance","label":"Finance & Insurance"},{"value":"prof","label":"Professional, Scientific & Technical"},{"value":"educ","label":"Education"},{"value":"health","label":"Health & Social Work"},{"value":"public","label":"Public Administration"},{"value":"arts","label":"Arts, Entertainment & Recreation"},{"value":"accom","label":"Accommodation & Food Service"},{"value":"other","label":"Other"},{"value":"pnts","label":"Prefer not to say"}],
-    layout: "horizontal",
-  },
-  {
-    id: "hobbies",
-    kind: "multi",
-    prompt: "Which of the following areas do you have an interest in, either as a hobby, personal activity, or professional involvement? ",
-    hint: "(Select all that apply)",
-    required: false,
-    choices: [{"value":"comm","label":"Community or group activities"},{"value":"soc","label":"Socialising with friends or family"},{"value":"arts","label":"Arts, culture or events"},{"value":"relax","label":"Relaxing or quiet time"},{"value":"sport","label":"Exercise or sport"},{"value":"outdoor","label":"Outdoor recreation"},{"value":"country","label":"Countryside pursuits"},{"value":"creative","label":"Creative hobbies"},{"value":"digital","label":"Digital entertainment"},{"value":"eatout","label":"Eating out"},{"value":"other","label":"Other"}],
+    visibleIf: (answers: Answers) => answers["country"] === 'roi',
   },
   {
     id: "comments",
@@ -479,7 +464,5 @@ export const sheetOrderedIds: string[] = [
   "country",
   "postcode",
   "eircode",
-  "job",
-  "hobbies",
   "comments"
 ];

@@ -374,6 +374,9 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
   };
 
   for (const row of rows) {
+    if (["country", "postcode", "eircode"].includes(row.name)) {
+      console.log("DEBUG ROW", row.name, row.type, row.label, row.hint, row.relevant);
+    }
     const t = row.type;
 
     if (t === "begin_group") {
