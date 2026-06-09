@@ -246,25 +246,29 @@ function PostcodeField({
   const errorMessage =
     touched && result && !result.ok ? postcodeErrorMessage(result.reason) : null;
 
+  const stripParens = (s: string) => s.replace(/\s*\([^)]*\)/g, "").trim();
+
+  // Visible label text: country-specific friendly prompts.
+  const labelText = q.id === "eircode" ? "Please enter the first 6 characters of your Eircode." : "Please enter your postcode.";
+
+  const placeholder = q.validate === "eircode-routing-key" ? "e.g. D02 X285" : "e.g. BT12 5AB";
+
   return (
     <section className="space-y-3">
+      <FieldLabel id={labelId} required={q.required}>
+        <LabelText text={labelText} />
+      </FieldLabel>
       <TextInput
         id={q.id}
         value={raw}
         onChange={(e) => onChange(e.target.value)}
         onBlur={() => setTouched(true)}
-        aria-label={q.prompt}
+        aria-labelledby={labelId}
         error={errorMessage}
         autoCapitalize="characters"
         autoCorrect="off"
         spellCheck={false}
-        placeholder={
-          q.validate === "eircode-routing-key"
-            ? "Please enter the first 6 characters of your Eircode (e.g. D02 X285)"
-            : q.validate === "ni-full-postcode"
-            ? "Please enter your postcode (e.g. BT12 5AB)"
-            : "Please enter your postcode (e.g. BT12 5AB) or Eircode (e.g. D02 X285)"
-        }
+        placeholder={placeholder}
       />
       {errorMessage && <HelperText tone="error">{errorMessage}</HelperText>}
       {result && result.ok && (
