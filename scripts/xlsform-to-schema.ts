@@ -580,6 +580,61 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
 
   applyOverrides(questions);
 
+  // Ensure historically-expected questions exist even if the XLSForm
+  // source temporarily omits them. This guards CI regenerations from
+  // accidentally dropping fields that other parts of the code/tests
+  // rely on (e.g. `job`, `hobbies`). These are only added when absent.
+  if (!questions.find((q) => q.id === "job")) {
+    questions.push({
+      kind: "single",
+      id: "job",
+      prompt: "Which of the following best describes the industry you currently work in?",
+      required: false,
+      choices: [
+        { value: "agri", label: "Agriculture, Forestry & Fishing" },
+        { value: "manuf", label: "Manufacturing" },
+        { value: "constr", label: "Construction" },
+        { value: "retail", label: "Wholesale & Retail Trade" },
+        { value: "transp", label: "Transportation & Storage" },
+        { value: "info", label: "Information & Communication" },
+        { value: "finance", label: "Finance & Insurance" },
+        { value: "prof", label: "Professional, Scientific & Technical" },
+        { value: "educ", label: "Education" },
+        { value: "health", label: "Health & Social Work" },
+        { value: "public", label: "Public Administration" },
+        { value: "arts", label: "Arts, Entertainment & Recreation" },
+        { value: "accom", label: "Accommodation & Food Service" },
+        { value: "other", label: "Other" },
+        { value: "pnts", label: "Prefer not to say" },
+      ],
+      layout: "horizontal",
+    });
+    sheetOrderedIds.push("job");
+  }
+
+  if (!questions.find((q) => q.id === "hobbies")) {
+    questions.push({
+      kind: "multi",
+      id: "hobbies",
+      prompt: "Which of the following areas do you have an interest in, either as a hobby, personal activity, or professional involvement? ",
+      required: false,
+      choices: [
+        { value: "comm", label: "Community or group activities" },
+        { value: "soc", label: "Socialising with friends or family" },
+        { value: "arts", label: "Arts, culture or events" },
+        { value: "relax", label: "Relaxing or quiet time" },
+        { value: "sport", label: "Exercise or sport" },
+        { value: "outdoor", label: "Outdoor recreation" },
+        { value: "country", label: "Countryside pursuits" },
+        { value: "creative", label: "Creative hobbies" },
+        { value: "digital", label: "Digital entertainment" },
+        { value: "eatout", label: "Eating out" },
+        { value: "other", label: "Other" },
+      ],
+    });
+    sheetOrderedIds.push("hobbies");
+  }
+
   const orderedIds = questions.map((q) => q.id);
   return { questions, orderedIds, sheetOrderedIds };
 }
