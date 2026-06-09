@@ -251,7 +251,7 @@ function PostcodeField({
   // Visible label text: country-specific friendly prompts.
   const labelText = q.id === "eircode" ? "Please enter the first 6 characters of your Eircode." : "Please enter your postcode.";
 
-  const placeholder = q.validate === "eircode-routing-key" ? "e.g. D02 X285" : "e.g. BT12 5AB";
+  const placeholder = q.validate === "eircode-routing-key" ? "e.g. D02 X2E" : "e.g. BT12 5AB";
 
   return (
     <section className="space-y-3">
