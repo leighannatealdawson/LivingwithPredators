@@ -247,38 +247,20 @@ function PostcodeField({
     touched && result && !result.ok ? postcodeErrorMessage(result.reason) : null;
 
   return (
-    <section aria-labelledby={labelId} className="space-y-3">
-      <FieldLabel id={labelId} required={q.required}>
-        {q.prompt}
-      </FieldLabel>
-      {q.hint && <HelperText>{q.hint}</HelperText>}
-      {q.validate === "eircode-routing-key" && (
-        <HelperText>
-          If you don’t know your Eircode, you can look it up using the{' '}
-          <a
-            href="https://finder.eircode.ie/#/"
-            target="_blank"
-            rel="noreferrer"
-            className="underline text-sky-700 hover:text-sky-900"
-          >
-            Eircode Finder
-          </a>
-          .
-        </HelperText>
-      )}
+    <section className="space-y-3">
       <TextInput
         id={q.id}
         value={raw}
         onChange={(e) => onChange(e.target.value)}
         onBlur={() => setTouched(true)}
-        aria-labelledby={labelId}
+        aria-label={q.prompt}
         error={errorMessage}
         autoCapitalize="characters"
         autoCorrect="off"
         spellCheck={false}
         placeholder={
           q.validate === "eircode-routing-key"
-            ? "e.g. D02"
+            ? "e.g. D02 X285"
             : q.validate === "ni-full-postcode"
             ? "e.g. BT12 5AB"
             : "e.g. BT12 5AB or D02 X285"

@@ -369,7 +369,7 @@ export const questions: Question[] = [
     hint: "This helps us understand how views and experiences may vary across different parts of the island of Ireland. As stated at the beginning, your response will remain anonymous.",
     required: false,
     multiline: false,
-    validate: "postcode-ie-ni",
+    validate: "ni-full-postcode",
     visibleIf: (answers: Answers) => answers["country"] === 'ni',
   },
   {
@@ -379,6 +379,7 @@ export const questions: Question[] = [
     hint: "Please enter the first 4 characters of your Eircode (e.g. D02).",
     required: false,
     multiline: true,
+    validate: "eircode-routing-key",
     visibleIf: (answers: Answers) => answers["country"] === 'roi',
   },
   {

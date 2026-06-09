@@ -199,7 +199,7 @@ type Question =
       exclusive?: string;
       followUps?: Record<string, Record<string, string>>;
     })
-  | (BaseQ & { kind: "text"; multiline: boolean; validate?: "postcode-ie-ni" })
+  | (BaseQ & { kind: "text"; multiline: boolean; validate?: "postcode-ie-ni" | "ni-full-postcode" | "eircode-routing-key" })
   | (BaseQ & { kind: "note" });
 
 interface ParsedForm {
@@ -509,7 +509,8 @@ function parseSurvey(rows: SurveyRow[], choices: Map<string, Array<{ value: stri
       if (matrixBuffer) flushMatrix();
       const rel = currentRelevant(row.relevant);
       const multiline = row.name !== "postcode";
-      const validate: "postcode-ie-ni" | undefined = row.name === "postcode" ? "postcode-ie-ni" : undefined;
+      const validate: "postcode-ie-ni" | "ni-full-postcode" | "eircode-routing-key" | undefined =
+        row.name === "postcode" ? "ni-full-postcode" : row.name === "eircode" ? "eircode-routing-key" : undefined;
       questions.push({
         kind: "text",
         id: row.name,
