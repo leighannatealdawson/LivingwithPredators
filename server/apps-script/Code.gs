@@ -26,6 +26,8 @@
 function doPost(e) {
   try {
     var payload = JSON.parse(e.postData && e.postData.contents ? e.postData.contents : "{}");
+    Logger.log("RAW BODY: " + (e.postData ? e.postData.contents : "NO POST DATA"));
+    Logger.log("PARSED PAYLOAD: " + JSON.stringify(payload));
 
     // Resolve the spreadsheet robustly:
     // 1) If a script property `SPREADSHEET_ID` is set, open by id (works for
