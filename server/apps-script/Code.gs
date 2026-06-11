@@ -1,5 +1,5 @@
 /**
- * Google Apps Script endpoint for the Wildlife Perception Survey.
+ * Google Apps Script endpoint for the Wildlife Perception Survey
  *
  * Deployment (one-time):
  *   1. Create a new Google Sheet. Call it something like "Wildlife Survey Responses".
@@ -27,9 +27,6 @@ function doPost(e) {
   try {
     var payload = JSON.parse(e.postData.contents || "{}");
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Public");
-    if (!sheet) {
-      throw new Error("Sheet 'Public' was not found. Rename the target tab to 'Public'.");
-    }
     var header = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
 
     // Dedupe: skip if this submissionId already exists (idempotent retries).
